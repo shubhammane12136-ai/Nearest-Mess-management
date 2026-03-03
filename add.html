@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Add Mess - DY Patil College</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:'Poppins',sans-serif;background:#f4f6f9;}
+.navbar{background:white;padding:15px 40px;box-shadow:0 2px 10px rgba(0,0,0,0.1);}
+.logo{font-size:22px;font-weight:700;color:#5a2d82;}
+.form-section{background:white;margin:50px auto;padding:20px;border-radius:15px;box-shadow:0 5px 20px rgba(0,0,0,0.1);text-align:center;width:400px;}
+.form-section input{padding:8px;margin:5px;width:90%;}
+.add-btn{background:#27ae60;color:white;padding:8px 15px;border:none;border-radius:20px;cursor:pointer;}
+</style>
+</head>
+<body>
+
+<div class="navbar"><div class="logo">MessFinder - Add Mess</div></div>
+
+<div class="form-section">
+<h3>Add New Mess</h3>
+<input type="text" id="name" placeholder="Mess Name" required>
+<input type="text" id="location" placeholder="Location">
+<input type="number" step="any" id="lat" placeholder="Latitude">
+<input type="number" step="any" id="lng" placeholder="Longitude">
+<input type="text" id="phone" placeholder="Phone">
+<input type="text" id="rent" placeholder="Rent">
+<input type="text" id="calendar" placeholder="Calendar">
+<input type="file" id="image" accept="image/*">
+<button class="add-btn" onclick="addMess()">Add Mess</button>
+<br><br>
+<a href="view.html">Go to View Mess</a>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script>
+// Firebase config
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT_ID.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// Add mess
+function addMess(){
+  let name=document.getElementById("name").value.trim();
+  let location=document.getElementById("location").value.trim();
+  let lat=parseFloat(document.getElementById("lat").value);
+  let lng=parseFloat(document.getElementById("lng").value);
+  let phone=document.getElementById("phone").value.trim();
+  let rent=document.getElementById("rent").value.trim();
+  let calendar=document.getElementById("calendar").value.trim();
+  let imageInput=document.getElementById("image");
+
+  if(name=="" || isNaN(lat) || isNaN(lng)){
+    alert("Mess Name, Latitude & Longitude Required!");
+    return;
+  }
+
+  let reader=new FileReader();
+  reader.onload=function(){
+    let imageBase64=reader.result;
+    db.collection("messes").add({name,location,lat,lng,phone,rent,calendar,rating:"New",image:imageBase64}).then(()=>{
+      alert("Mess Added!");
+      document.querySelectorAll("input").forEach(i=>i.value="");
+    });
+  };
+  if(imageInput.files[0]) reader.readAsDataURL(imageInput.files[0]);
+  else db.collection("messes").add({name,location,lat,lng,phone,rent,calendar,rating:"New"}).then(()=>{
+      alert("Mess Added!");
+      document.querySelectorAll("input").forEach(i=>i.value="");
+  });
+}
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyAZnDg8LrSMBPJ1Nv2g7w8Upin8_YETA18",
+  authDomain: "dyp-mess-finder-816d5.firebaseapp.com",
+  projectId: "dyp-mess-finder-816d5",
+  storageBucket: "dyp-mess-finder-816d5.firebasestorage.app",
+  messagingSenderId: "131438659494",
+  appId: "1:131438659494:web:2ebd428de71efb831bb167",
+  measurementId: "G-N3F472736K"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+</script>
+</body>
+</html>

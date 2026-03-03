@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>View Mess - DY Patil College</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:'Poppins',sans-serif;background:#f4f6f9;}
+.navbar{background:white;padding:15px 40px;box-shadow:0 2px 10px rgba(0,0,0,0.1);}
+.logo{font-size:22px;font-weight:700;color:#5a2d82;}
+.container{text-align:center;padding:20px;}
+.card{background:white;width:300px;border-radius:15px;overflow:hidden;box-shadow:0 5px 20px rgba(0,0,0,0.1);margin:15px;display:inline-block;}
+.card img{width:100%;height:180px;object-fit:cover;}
+.card-content{padding:15px;}
+.rating{background:#ffcc00;padding:3px 8px;border-radius:10px;font-size:12px;font-weight:600;}
+.rent{color:#27ae60;font-weight:600;}
+.map-link{display:block;margin-top:8px;text-decoration:none;color:#5a2d82;font-weight:600;}
+.distance{margin-top:8px;font-weight:600;color:#5a2d82;}
+.nearest{background:green;color:white;padding:3px 8px;border-radius:10px;font-size:12px;display:inline-block;margin-bottom:5px;}
+</style>
+</head>
+<body>
+
+<div class="navbar"><div class="logo">MessFinder - View Mess</div></div>
+
+<div class="container" id="messList"></div>
+<br>
+<a href="add.html">Go to Add Mess</a>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script>
+const collegeLat=16.732662;
+const collegeLng=74.240627;
+
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT_ID.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+firebase.initializeApp(firebaseConfig);
+const db=firebase.firestore();
+
+function calculateDistance(lat1,lon1,lat2,lon2){
+  const R=6371;
+  const dLat=(lat2-lat1)*Math.PI/180;
+  const dLon=(lon2-lon1)*Math.PI/180;
+  const a=Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+  const c=2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+  return (R*c).toFixed(2);
+}
+
+// Real-time display
+db.collection("messes").onSnapshot(snapshot=>{
+  let list=document.getElementById("messList");
+  let messData=[];
+  snapshot.forEach(doc=>{ messData.push(doc.data()); });
+  messData.forEach(mess=>{ mess.distance=calculateDistance(collegeLat,collegeLng,mess.lat,mess.lng); });
+  messData.sort((a,b)=>a.distance-b.distance);
+  list.innerHTML="";
+  messData.forEach((mess,index)=>{
+    let nearestTag=index===0?"<div class='nearest'>Nearest</div>":"";
+    let imageSrc=mess.image || "https://source.unsplash.com/400x300/?food";
+    list.innerHTML+=`
+      <div class="card">
+        <img src="${imageSrc}" alt="mess">
+        <div class="card-content">
+          ${nearestTag}
+          <span class="rating">⭐ ${mess.rating||"New"}</span>
+          <h3>${mess.name}</h3>
+          <p>${mess.location}</p>
+          <a class="map-link" href="https://www.google.com/maps/dir/${collegeLat},${collegeLng}/${mess.lat},${mess.lng}" target="_blank">📍 Route from College</a>
+          <p class="distance">📏 ${mess.distance} KM from College</p>
+          <p class="rent">₹${mess.rent}/month</p>
+          <p>${mess.calendar}</p>
+        </div>
+      </div>
+    `;
+  });
+});
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyAZnDg8LrSMBPJ1Nv2g7w8Upin8_YETA18",
+  authDomain: "dyp-mess-finder-816d5.firebaseapp.com",
+  projectId: "dyp-mess-finder-816d5",
+  storageBucket: "dyp-mess-finder-816d5.firebasestorage.app",
+  messagingSenderId: "131438659494",
+  appId: "1:131438659494:web:2ebd428de71efb831bb167",
+  measurementId: "G-N3F472736K"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+</script>
+</body>
+</html>
