@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartMess | Fresh Food Nearby</title>
+    <!-- Animations -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+
+</head>
+
+<body>
+
+    <!-- Lively Background Shapes -->
+    <div class="bg-shape shape-1"></div>
+    <div class="bg-shape shape-2"></div>
+
+    <nav id="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo"><i class="fas fa-pizza-slice"></i> SmartMess</a>
+            <div id="nav-actions" style="display: flex; gap: 1rem; align-items: center;">
+                <button class="theme-toggle" onclick="window.toggleTheme()" title="Toggle Dark/Light Mode">
+                    <i class="fas fa-moon" style="color: #2A363B;"></i>
+                </button>
+                <a href="login.html" class="btn btn-outline">Login</a>
+                <a href="register.html" class="btn btn-primary">Sign Up</a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <h1 class="animate-pop-in delay-1">Find the freshest <br><span style="color: var(--primary);">daily meals</span>
+            near you.</h1>
+        <p class="animate-pop-in delay-2">We connect DY Patil students with top-rated local messes. Say goodbye to bad
+            food days.</p>
+
+        <!-- Floating Search & Filter Bar -->
+        <div class="search-float-bar animate-pop-in delay-3" style="width: 100%;">
+            <div class="search-input-group">
+                <i class="fas fa-search"></i>
+                <input type="text" id="search-input" placeholder="Search by mess name or area...">
+            </div>
+
+            <div style="width: 2px; height: 30px; background: #E9ECEF; margin: 0 10px;" class="desktop-only"></div>
+
+            <select id="type-filter" class="filter-select">
+                <option value="all">🍽️ All Food Types</option>
+                <option value="veg">🥬 Pure Veg</option>
+                <option value="non-veg">🍗 Non-Veg</option>
+                <option value="both">🍱 Veg & Non-Veg</option>
+            </select>
+
+            <div style="width: 2px; height: 30px; background: #E9ECEF; margin: 0 10px;" class="desktop-only"></div>
+
+            <select id="gender-filter" class="filter-select">
+                <option value="all">👥 All Categories</option>
+                <option value="boys">👨 Boys Only</option>
+                <option value="girls">👩 Girls Only</option>
+                <option value="mixed">👫 Mixed Batch</option>
+            </select>
+
+            <button id="search-btn" class="btn btn-primary" style="margin-left: 10px; height: 50px;">
+                Find Matches
+            </button>
+        </div>
+    </header>
+
+    <main class="container" id="messes" style="margin-bottom: 100px;">
+        <div class="section-title" data-aos="fade-up">
+            <h2 style="font-size: 2.25rem;">Popular Spots Near DYP</h2>
+            <span
+                style="background: rgba(78, 205, 196, 0.1); color: var(--secondary); padding: 8px 16px; border-radius: 100px; font-weight: 800; font-size: 0.9rem;">
+                <i class="fas fa-bolt" style="color: #FFD43B;"></i> Real-time Info
+            </span>
+        </div>
+
+        <div id="mess-loader" style="display: none;">
+            <div class="spinner-lively"></div>
+        </div>
+
+        <div id="messList" class="mess-grid">
+            <!-- Dynamic Mess Cards -->
+        </div>
+    </main>
+
+    <footer style="background: white; padding: 60px 0; text-align: center; border-top: 2px dashed rgba(0,0,0,0.05);">
+        <div class="container">
+            <h2 class="logo" style="justify-content: center; margin-bottom: 20px;"><i class="fas fa-pizza-slice"></i>
+                SmartMess</h2>
+            <p style="color: var(--text-gray); font-weight: 600; max-width: 500px; margin: 0 auto 30px;">
+                Making student life tastier. We verify local food providers so you don't have to worry about your next
+                meal.
+            </p>
+            <div
+                style="display: flex; justify-content: center; gap: 20px; font-size: 1.5rem; color: var(--primary); margin-bottom: 20px;">
+                <i class="fab fa-instagram" style="cursor: pointer; transition: 0.3s;"
+                    onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'"></i>
+                <i class="fab fa-twitter" style="cursor: pointer; transition: 0.3s;"
+                    onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'"></i>
+            </div>
+            <p style="color: #ADB5BD; font-size: 0.9rem; font-weight: 700;">&copy; 2026 SmartMess Finder. Built for
+                Students.</p>
+        </div>
+    </footer>
+
+    <style>
+        @media (max-width: 768px) {
+            .desktop-only {
+                display: none !important;
+            }
+
+            .search-float-bar {
+                max-width: 100%;
+                border-radius: 20px;
+                padding: 15px;
+            }
+
+            .search-input-group,
+            .filter-select {
+                background: #F8F9FA;
+                margin-bottom: 10px;
+                width: 100%;
+            }
+
+            .search-float-bar .btn {
+                width: 100%;
+                margin-left: 0;
+            }
+        }
+    </style>
+
+    <!-- AOS Animation Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script>
+        AOS.init({
+            duration: 800,
+            once: true,
+            offset: 50
+        });
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                nav.style.boxShadow = '0 10px 30px rgba(0,0,0,0.05)';
+            } else {
+                nav.style.boxShadow = 'none';
+            }
+        });
+    </script>
+
+    <script type="module">
+        import { authService } from './js/auth.js';
+        import { messService } from './js/mess.js';
+        import { uiService } from './js/ui.js';
+
+        const grid = document.getElementById('messList');
+        const loader = document.getElementById('mess-loader');
+
+        async function init() {
+            const user = await authService.init();
+            updateNav(user, authService.userRole);
+            loadMesses();
+
+            // React to further auth changes
+            document.addEventListener('authChange', (e) => {
+                updateNav(e.detail.user, e.detail.role);
+            });
+
+            // Bind Search events
+            document.getElementById('search-btn').onclick = loadMesses;
+            document.getElementById('search-input').onkeyup = (e) => e.key === 'Enter' && loadMesses();
+            document.getElementById('type-filter').onchange = loadMesses;
+            document.getElementById('gender-filter').onchange = loadMesses;
+        }
+
+        function updateNav(user, role) {
+            const container = document.getElementById('nav-actions');
+            if (!user) {
+                // Show Login/Register if logged out
+                container.innerHTML = `
+                    <button class="theme-toggle" onclick="window.toggleTheme()"><i class="fas fa-moon"></i></button>
+                    <a href="login.html" class="btn btn-outline">Login</a>
+                    <a href="register.html" class="btn btn-primary">Sign Up</a>
+                `;
+                return;
+            }
+
+            // User is logged in
+            const userName = user.user_metadata?.full_name || user.email.split('@')[0];
+            container.innerHTML = `
+                <div style="display:flex; align-items:center; gap:1.2rem;">
+                    <button class="theme-toggle" onclick="window.toggleTheme()"><i class="fas fa-moon"></i></button>
+                    <span style="font-weight: 700; color: var(--text-gray); font-size: 0.9rem;">👋 hi, ${userName}</span>
+                    ${role === 'owner' ? '<a href="dashboard.html" class="btn btn-primary" style="padding: 8px 16px; font-size: 0.9rem;">Dashboard</a>' : ''}
+                    <button id="logout-btn" class="btn btn-outline" style="padding: 8px 16px; font-size: 0.9rem; border-color: #E9ECEF;">Logout</button>
+                </div>
+            `;
+            document.getElementById('logout-btn').onclick = () => authService.logout();
+            uiService.updateThemeIcon(localStorage.getItem('smartmess-theme') || 'light');
+        }
+
+        async function loadMesses() {
+            loader.style.display = 'block';
+            grid.innerHTML = '';
+
+            try {
+                const filters = {
+                    name: document.getElementById('search-input').value,
+                    type: document.getElementById('type-filter').value,
+                    gender: document.getElementById('gender-filter').value
+                };
+
+                const messes = await messService.getAllMesses(filters);
+                loader.style.display = 'none';
+
+
+                if (messes.length === 0) {
+                    grid.innerHTML = `
+                        <div style="grid-column: 1/-1; text-align: center; padding: 60px; background: white; border-radius: 30px; box-shadow: var(--shadow-soft);">
+                            <img src="https://cdn-icons-png.flaticon.com/512/7486/7486831.png" style="width: 100px; opacity: 0.5; margin-bottom: 20px;">
+                            <h3 style="color: var(--text-gray);">No specific matches found.</h3>
+                            <p style="color: #CED4DA; font-weight: 600;">Try adjusting your filters.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                displayMesses(messes);
+            } catch (err) {
+                loader.style.display = 'none';
+                uiService.showToast(err.message, 'error');
+            }
+        }
+
+        // 5️⃣ Display Messes on Student Dashboard (Preserving the beautiful UX)
+        function displayMesses(messes) {
+            const container = document.getElementById('messList');
+            container.innerHTML = '';
+
+            messes.forEach((mess, index) => {
+                const card = document.createElement('div');
+                card.className = 'mess-card';
+                card.setAttribute('data-aos', 'fade-up');
+                card.setAttribute('data-aos-delay', (index % 3) * 100);
+
+                // Fallback for missing or mismatched schema properties
+                const vegType = mess.veg_type || mess.type || 'N/A';
+                const catGender = mess.category || mess.gender || 'N/A';
+
+                const vegBadgeClass = vegType.toLowerCase().includes('veg') && !vegType.toLowerCase().includes('non') ? 'badge-veg' : 'badge-nonveg';
+                const icon = vegBadgeClass === 'badge-veg' ? 'fa-leaf' : 'fa-drumstick-bite';
+
+                const fallbackImg = "https://placehold.co/600x400?text=No+Image";
+                // Use image_url from Supabase Storage (uploaded file) OR external URL stored in image_url
+                let imgUrl = (mess.image_url && mess.image_url.trim() !== '') ? mess.image_url.trim() : fallbackImg;
+                if (imgUrl.match(/\.(html|htm|php|aspx)$/i)) imgUrl = fallbackImg;
+
+                // Read from map_url OR map_link (handles both column names in Supabase)
+                const rawMapLink = mess.map_url || mess.map_link || '';
+                let mapUrl;
+                if (rawMapLink.trim() !== '' && rawMapLink !== '#') {
+                    mapUrl = /^https?:\/\//i.test(rawMapLink) ? rawMapLink : 'https://' + rawMapLink;
+                } else if (mess.latitude && mess.longitude) {
+                    mapUrl = `https://www.google.com/maps?q=${mess.latitude},${mess.longitude}`;
+                } else {
+                    mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mess.address || mess.name)}`;
+                }
+
+                card.innerHTML = `
+                    <div class="card-img-container">
+                        <img src="${imgUrl}" alt="${mess.name}"
+                             referrerpolicy="no-referrer"
+                             onerror="this.onerror=null;this.src='${fallbackImg}'">
+                        <div class="card-badges">
+                            <span class="badge ${vegBadgeClass}"><i class="fas ${icon}"></i> ${vegType}</span>
+                            <span class="badge badge-gender"><i class="fas fa-users"></i> ${catGender}</span>
+                        </div>
+                    </div>
+                    <div class="card-info">
+                        <div class="card-title">
+                            <h3>${mess.name}</h3>
+                            <div class="card-price">₹${mess.price || 0}</div>
+                        </div>
+                        <div class="card-address">
+                            <i class="fas fa-map-pin" style="color: var(--primary); margin-right: 6px;"></i>${mess.address || 'Address not listed'}
+                        </div>
+                        
+                        <div class="card-footer">
+                            <div class="rating-box">
+                                <i class="fas fa-star"></i> ${mess.rating || '0.0'}
+                                <span style="font-size: 0.8rem; color: #ADB5BD;">(${mess.total_ratings || 0})</span>
+                            </div>
+                            <div class="distance-box">
+                                <i class="fas fa-location-arrow"></i> ${mess.distance || '0'} KM
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: 10px; margin-top: 15px;">
+                            <a href="mess-details.html?id=${mess.id}" class="btn btn-outline" style="flex: 1; border-color: var(--secondary); color: var(--secondary); padding: 10px;">Details <i class="fas fa-info-circle"></i></a>
+                            <a href="${mapUrl}" target="_blank" class="btn btn-primary" style="flex: 1; padding: 10px;">Maps <i class="fas fa-map-marked-alt"></i></a>
+                        </div>
+                        <button onclick="handleRating('${mess.id}')" class="btn btn-outline" style="width: 100%; margin-top: 10px; border-color: #E9ECEF; color: var(--text-gray); padding: 8px;">⭐ Rate this Mess</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        window.handleRating = async (id) => {
+            const user = authService.currentUser;
+            if (!user) {
+                uiService.showToast("Log in as a student to rate this mess!", "error"); return;
+            }
+            const val = prompt("Awesome! Rate this mess out of 5:", "5");
+            if (!val || isNaN(val)) return;
+            try {
+                await messService.rateMess(id, parseInt(val));
+                uiService.showToast("Thanks! Rating updated.");
+                loadMesses();
+            } catch (err) { uiService.showToast(err.message, 'error'); }
+        }
+
+        init();
+    </script>
+</body>
+
+</html>

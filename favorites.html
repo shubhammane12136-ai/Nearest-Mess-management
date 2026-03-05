@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Favorites | SmartMess</title>
+    <!-- Animations -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <!-- Lively Background Shapes -->
+    <div class="bg-shape shape-1"></div>
+    <div class="bg-shape shape-2"></div>
+
+    <nav id="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo"><i class="fas fa-heart" style="color: var(--primary);"></i> Saved List</a>
+            <div id="nav-actions" style="display: flex; gap: 1rem; align-items: center;">
+                <button class="theme-toggle" onclick="window.toggleTheme()" title="Toggle Dark/Light Mode">
+                    <i class="fas fa-moon" style="color: #2A363B;"></i>
+                </button>
+                <a href="index.html" class="btn btn-outline">Go Home</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container" style="padding: 120px 0 60px;">
+        <div style="margin-bottom: 3rem;" data-aos="fade-up">
+            <h1 style="font-size: 2.5rem; margin-bottom: 10px;">Your Shortlist</h1>
+            <p style="color: var(--text-gray); font-weight: 700; font-size: 1.15rem;">The places you love, all in one
+                spot.</p>
+        </div>
+
+        <div id="fav-loader">
+            <div class="spinner-lively"></div>
+        </div>
+
+        <div id="favorites-grid" class="mess-grid">
+            <!-- Loaded via JS -->
+        </div>
+    </main>
+
+    <!-- AOS Animation Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script> AOS.init({ duration: 800, once: true }); </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script type="module">
+        import { authService } from './js/auth.js';
+        import { uiService } from './js/ui.js';
+        import { messService } from './js/mess.js';
+
+        const grid = document.getElementById('favorites-grid');
+        const loader = document.getElementById('fav-loader');
+
+        async function init() {
+            const user = await authService.init();
+            if (!user) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // Logic to load favorites would go here. 
+            // For now, let's show an empty state or sample if Favorites aren't fully implemented in Supabase yet.
+            loader.style.display = 'none';
+            grid.innerHTML = `
+                <div style="grid-column: 1/-1; text-align: center; padding: 100px 20px; background: var(--bg-card); border-radius: 40px; box-shadow: var(--shadow-soft);" data-aos="zoom-in">
+                    <i class="fas fa-heart" style="font-size: 4rem; color: #FFE66D; margin-bottom: 25px;"></i>
+                    <h2 style="color: var(--text-dark);">Starting your food journey...</h2>
+                    <p style="color: var(--text-gray); font-weight: 700; margin-top: 10px;">Explore the discovery page and save your first mess!</p>
+                    <a href="index.html" class="btn btn-primary" style="margin-top: 30px; height: 50px;">Explore Nearby Messes</a>
+                </div>
+            `;
+        }
+        init();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | SmartMess</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body
+    style="display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; overflow: hidden;">
+
+    <!-- Playful Background Shapes -->
+    <div class="bg-shape shape-1" style="width: 500px; height: 500px; top: -150px; left: -150px;"></div>
+    <div class="bg-shape shape-2"
+        style="width: 400px; height: 400px; bottom: -150px; right: -150px; background: rgba(255, 230, 109, 0.4);"></div>
+
+    <div class="animate-pop-in" style="max-width: 450px; width: 100%; position: relative; z-index: 10;">
+        <div
+            style="background: white; border-radius: var(--radius-xl); padding: 50px; box-shadow: var(--shadow-hover); border: 2px solid rgba(255, 107, 107, 0.1);">
+
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <button class="theme-toggle" onclick="window.toggleTheme()" title="Toggle Dark/Light Mode"
+                    style="position: absolute; top: 20px; right: 20px;">
+                    <i class="fas fa-moon" style="color: #2A363B;"></i>
+                </button>
+            </div>
+
+            <div style="text-align: center; margin-bottom: 30px;">
+                <a href="index.html" class="logo" style="justify-content: center; font-size: 2.5rem;">
+                    <i class="fas fa-pizza-slice"></i> SmartMess
+                </a>
+                <h2 style="margin-top: 15px; font-weight: 800; font-size: 1.75rem;">Welcome Back! 🍕</h2>
+                <p style="color: var(--text-gray); font-weight: 600; margin-top: 8px;">Let's get you logged in.</p>
+            </div>
+
+            <form id="login-form">
+                <div class="form-group">
+                    <label class="form-label"><i class="fas fa-envelope"
+                            style="color: var(--primary); margin-right: 8px;"></i> Email Address</label>
+                    <input type="email" id="email" class="form-control" placeholder="you@student.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label"><i class="fas fa-lock"
+                            style="color: var(--primary); margin-right: 8px;"></i> Password</label>
+                    <input type="password" id="password" class="form-control" placeholder="••••••••" required>
+                </div>
+
+                <button type="submit" id="login-btn" class="btn btn-primary"
+                    style="width: 100%; height: 55px; margin-top: 10px; font-size: 1.1rem;">
+                    Login to SmartMess <i class="fas fa-arrow-right" style="margin-left: 5px;"></i>
+                </button>
+            </form>
+
+            <p style="text-align: center; margin-top: 30px; font-weight: 700; color: var(--text-gray);">
+                Not on SmartMess yet? <a href="register.html" style="color: var(--primary); text-decoration: none;">Sign
+                    Up Now</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- AOS Animation Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script>
+        AOS.init({ duration: 800, once: true });
+    </script>
+
+    <script type="module">
+        import { authService } from './js/auth.js';
+        import { uiService } from './js/ui.js';
+
+        const form = document.getElementById('login-form');
+        const btn = document.getElementById('login-btn');
+
+        form.onsubmit = async (e) => {
+            e.preventDefault();
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Authenticating...';
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                // 1. Perform Login & Fetch Role
+                const { user, role } = await authService.login(email, password);
+
+                uiService.showToast("Welcome back! Redircting... 🎉");
+
+                // 2. Clear Redirection Logic
+                setTimeout(() => {
+                    if (role === 'owner') {
+                        window.location.href = 'dashboard.html';
+                    } else if (role === 'student') {
+                        window.location.href = 'index.html';
+                    } else {
+                        // Edge case: Auth exists but no profile row found
+                        uiService.showToast("Account found but profile setup incomplete.", "error");
+                        btn.disabled = false;
+                        btn.innerHTML = 'Retry Login';
+                    }
+                }, 1000);
+
+            } catch (err) {
+                uiService.showToast(err.message, 'error');
+                btn.disabled = false;
+                btn.innerHTML = 'Login to SmartMess <i class="fas fa-arrow-right" style="margin-left: 5px;"></i>';
+            }
+        };
+    </script>
+</body>
+
+</html>

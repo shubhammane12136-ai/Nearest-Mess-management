@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mess Details | SmartMess</title>
+    <!-- Animations -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <!-- Lively Background Shapes -->
+    <div class="bg-shape shape-1"></div>
+    <div class="bg-shape shape-2"></div>
+
+    <nav id="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo"><i class="fas fa-pizza-slice"></i> SmartMess</a>
+            <div id="nav-actions" style="display: flex; gap: 1rem; align-items: center;">
+                <button class="theme-toggle" onclick="window.toggleTheme()" title="Toggle Dark/Light Mode">
+                    <i class="fas fa-moon" style="color: #2A363B;"></i>
+                </button>
+                <a href="login.html" class="btn btn-outline">Login</a>
+                <a href="register.html" class="btn btn-primary">Join Free</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container" style="padding: 120px 0 60px;">
+        <div id="details-loader">
+            <div class="spinner-lively"></div>
+        </div>
+
+        <div id="details-content" style="display: none;">
+            <!-- Loaded via JS -->
+        </div>
+    </main>
+
+    <footer
+        style="background: var(--bg-card); padding: 40px 0; text-align: center; border-top: 2px dashed rgba(0,0,0,0.05); margin-top: 60px;">
+        <p style="color: var(--text-gray); font-weight: 700;">&copy; 2026 SmartMess Finder. Built for students.</p>
+    </footer>
+
+    <!-- AOS Animation Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script> AOS.init({ duration: 800, once: true }); </script>
+
+    <!-- Supabase Core -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script type="module">
+        import { authService } from './js/auth.js';
+        import { messService } from './js/mess.js';
+        import { uiService } from './js/ui.js';
+        import { supabase } from './js/supabase.js';
+
+        const content = document.getElementById('details-content');
+        const loader = document.getElementById('details-loader');
+
+        async function init() {
+            const user = await authService.init();
+            updateNav(user, authService.userRole);
+
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get('id');
+            if (!id) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            loadMessDetails(id);
+        }
+
+        function updateNav(user, role) {
+            const container = document.getElementById('nav-actions');
+            if (user) {
+                container.innerHTML = `
+                    <div style="display:flex; align-items:center; gap:1.5rem;">
+                        <button class="theme-toggle" onclick="window.toggleTheme()"><i class="fas fa-moon"></i></button>
+                        <span style="font-weight: 700; color: var(--text-gray); font-size: 0.95rem;">👋 Hello, ${user.email.split('@')[0]}</span>
+                        ${role === 'owner' ? '<a href="dashboard.html" class="btn btn-primary" style="padding: 10px 20px;">Dashboard</a>' : ''}
+                        <button id="logout-btn" class="btn btn-outline" style="border-color: #E9ECEF; color: var(--text-gray); padding: 10px 20px;">Logout</button>
+                    </div>
+                `;
+                document.getElementById('logout-btn').onclick = () => authService.logout();
+                uiService.updateThemeIcon(localStorage.getItem('smartmess-theme') || 'light');
+            }
+        }
+
+        async function loadMessDetails(id) {
+            try {
+                const { data: mess, error } = await supabase.from('messes').select('*').eq('id', id).single();
+                if (error) throw error;
+
+                loader.style.display = 'none';
+                content.style.display = 'block';
+
+                const vegType = mess.veg_type || mess.type || 'N/A';
+                const catGender = mess.category || mess.gender || 'N/A';
+
+                const vegBadgeClass = vegType.toLowerCase().includes('veg') && !vegType.toLowerCase().includes('non') ? 'badge-veg' : 'badge-nonveg';
+                const icon = vegBadgeClass === 'badge-veg' ? 'fa-leaf' : 'fa-drumstick-bite';
+
+                const fallbackImg = "https://placehold.co/1200x600?text=No+Image";
+                // Use image_url from Supabase Storage (uploaded file) OR external URL stored in image_url
+                let imgUrl = (mess.image_url && mess.image_url.trim() !== '') ? mess.image_url.trim() : fallbackImg;
+                if (imgUrl.match(/\.(html|htm|php|aspx)$/i)) imgUrl = fallbackImg;
+
+                // Read from map_url OR map_link (handles both column names in Supabase)
+                const rawMapLink = mess.map_url || mess.map_link || '';
+                let mapUrl;
+                if (rawMapLink.trim() !== '' && rawMapLink !== '#') {
+                    mapUrl = /^https?:\/\//i.test(rawMapLink) ? rawMapLink : 'https://' + rawMapLink;
+                } else if (mess.latitude && mess.longitude) {
+                    mapUrl = `https://www.google.com/maps?q=${mess.latitude},${mess.longitude}`;
+                } else {
+                    mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mess.address || mess.name)}`;
+                }
+
+                const phone = mess.phone || '7020844738'; // fallback to standard phone if missing
+
+                content.innerHTML = `
+                    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 3rem; align-items: start;">
+                        
+                        <!-- Main Details -->
+                        <div data-aos="fade-right">
+                            <div style="border-radius: 40px; overflow: hidden; box-shadow: var(--shadow-soft); margin-bottom: 2rem;">
+                                <img src="${imgUrl}"
+                                     onerror="this.onerror=null;this.src='${fallbackImg}'"
+                                     referrerpolicy="no-referrer"
+                                     style="width: 100%; height: 450px; object-fit: cover;">
+                            </div>
+
+                            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem;">
+                                <div>
+                                    <h1 style="font-size: 3.5rem; line-height: 1;">${mess.name}</h1>
+                                    <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                                        <span class="badge ${vegBadgeClass}" style="font-size: 1rem; padding: 10px 20px;"><i class="fas ${icon}"></i> ${vegType}</span>
+                                        <span class="badge badge-gender" style="font-size: 1rem; padding: 10px 20px;"><i class="fas fa-users"></i> ${catGender} Students</span>
+                                    </div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="font-size: 1.25rem; color: var(--text-gray); font-weight: 700;">Starting at</div>
+                                    <div style="font-size: 3rem; color: var(--primary); font-weight: 900; line-height: 1;">₹${mess.price || 0}<span style="font-size: 1.25rem; color: var(--text-gray);">/mo</span></div>
+                                </div>
+                            </div>
+
+                            <div class="glass-card" style="padding: 30px; margin-bottom: 2rem;">
+                                <h3 style="margin-bottom: 1.5rem;"><i class="fas fa-info-circle" style="color: var(--secondary);"></i> About the Mess</h3>
+                                <p style="font-size: 1.1rem; color: var(--text-gray); font-weight: 600;">Located at ${mess.address || 'an unlisted area'}. Experience the delicious home-cooked flavor every day. Highly recommended for students near DY Patil University.</p>
+                                
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 2rem;">
+                                    <div style="display: flex; align-items: center; gap: 12px; color: var(--text-dark); background: var(--bg-main); padding: 15px; border-radius: 20px;">
+                                        <i class="fas fa-check-circle" style="color: var(--secondary);"></i>
+                                        <span style="font-weight: 700;">Verified Provider</span>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 12px; color: var(--text-dark); background: var(--bg-main); padding: 15px; border-radius: 20px;">
+                                        <i class="fas fa-clock" style="color: var(--secondary);"></i>
+                                        <span style="font-weight: 700;">Lunch & Dinner</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Card -->
+                        <div data-aos="fade-left" style="position: sticky; top: 120px;">
+                            <div class="glass-card" style="padding: 40px; text-align: center; border: 4px solid var(--primary-glow);">
+                                <div class="rating-box" style="justify-content: center; font-size: 1.5rem; padding: 15px; margin-bottom: 2rem;">
+                                    <i class="fas fa-star"></i> ${mess.rating || '0.0'} / 5.0
+                                </div>
+                                <p style="color: var(--text-gray); font-weight: 700; margin-bottom: 2rem;">Interested? Connect with the owner directly to secure your spot.</p>
+                                
+                                <a href="tel:${phone}" class="btn btn-primary" style="width: 100%; height: 60px; font-size: 1.2rem; margin-bottom: 1rem;">
+                                    <i class="fas fa-phone-alt"></i> Call Owner
+                                </a>
+                                <a href="https://wa.me/91${phone}" target="_blank" class="btn btn-outline" style="width: 100%; height: 60px; font-size: 1.2rem; border-color: #25D366; color: #25D366; background: rgba(37, 211, 102, 0.05);">
+                                    <i class="fab fa-whatsapp"></i> WhatsApp Me
+                                </a>
+                                <hr style="margin: 2rem 0; border: 0; border-top: 2px dashed rgba(0,0,0,0.05);">
+                                <a href="${mapUrl}" target="_blank" class="btn btn-outline" style="width: 100%; border-color: var(--secondary); color: var(--secondary);">
+                                    <i class="fas fa-directions"></i> Open in Maps
+                                </a>
+                            </div>
+                        </div>
+
+                    </div>
+                `;
+            } catch (err) { uiService.showToast(err.message, 'error'); }
+        }
+
+        init();
+    </script>
+</body>
+
+</html>

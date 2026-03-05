@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Owner Portal | SmartMess</title>
+    <!-- Animations -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <!-- Lively Background Shapes -->
+    <div class="bg-shape shape-1"></div>
+    <div class="bg-shape shape-2"></div>
+
+    <nav id="navbar" style="box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-store"></i> Owner Portal
+            </a>
+            <div id="nav-actions" style="display: flex; gap: 1rem; align-items: center;">
+                <button class="theme-toggle" onclick="window.toggleTheme()" title="Toggle Dark/Light Mode">
+                    <i class="fas fa-moon" style="color: #2A363B;"></i>
+                </button>
+                <span id="user-display"
+                    style="font-weight: 700; color: var(--text-gray); font-size: 0.95rem; margin-right: 15px;"></span>
+                <a href="index.html" class="btn btn-outline"
+                    style="border-color: #E9ECEF; color: var(--text-gray); padding: 8px 16px;">View Site</a>
+                <button id="logout-btn" class="btn btn-primary"
+                    style="padding: 8px 16px; background: white; color: var(--primary); border: 2px solid var(--primary-light); box-shadow: none;">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container" style="padding: 120px 0 60px;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 3rem;"
+            data-aos="fade-up">
+            <div>
+                <h1 style="font-size: 2.5rem; margin-bottom: 10px;">My Mess Listings</h1>
+                <p style="color: var(--text-gray); font-weight: 600; font-size: 1.1rem;">Manage your profile and attract
+                    more students.</p>
+            </div>
+            <button id="add-mess-btn" class="btn btn-primary" style="height: 55px; font-size: 1.1rem;">
+                <i class="fas fa-plus-circle"></i> Create New Listing
+            </button>
+        </div>
+
+        <div id="owner-loader" style="display: none;">
+            <div class="spinner-lively"></div>
+        </div>
+
+        <div id="owner-grid" class="mess-grid">
+            <!-- Mess Cards -->
+        </div>
+    </main>
+
+    <!-- App-like Modal -->
+    <div id="mess-modal"
+        style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(8px); z-index: 2000; place-items: center; padding: 20px; overflow-y: auto;">
+        <div class="glass-card"
+            style="max-width: 700px; width: 100%; position: relative; border-radius: 36px; padding: 40px;">
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                <h2 id="modal-title" style="font-size: 2rem;">Add Menu Detail</h2>
+                <button onclick="closeModal()"
+                    style="background: #F8F9FA; border: none; width: 45px; height: 45px; border-radius: 50%; display: grid; place-items: center; font-size: 1.25rem; color: var(--text-gray); cursor: pointer; transition: 0.3s;"
+                    onmouseover="this.style.background='#E9ECEF'" onmouseout="this.style.background='#F8F9FA'">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form id="mess-form">
+                <input type="hidden" id="mess-id">
+                <div class="form-group">
+                    <label class="form-label" style="color: var(--primary);"><i class="fas fa-utensils"></i> Mess
+                        Name</label>
+                    <input type="text" id="mess-name" class="form-control" placeholder="e.g. Grandma's Kitchen"
+                        required>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                    <div class="form-group">
+                        <label class="form-label">Food Type</label>
+                        <select id="mess-type" class="form-control" required style="cursor: pointer;">
+                            <option value="veg">🥬 Pure Veg</option>
+                            <option value="non-veg">🍗 Non-Veg</option>
+                            <option value="both">🍱 Both Options</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Category</label>
+                        <select id="mess-gender" class="form-control" required style="cursor: pointer;">
+                            <option value="boys">👨 Boys</option>
+                            <option value="girls">👩 Girls</option>
+                            <option value="mixed">👫 Mixed Batch</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                    <div class="form-group">
+                        <label class="form-label"><i class="fas fa-rupee-sign"></i> Monthly Price</label>
+                        <input type="number" id="mess-price" class="form-control" value="3000" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label"><i class="fas fa-phone"></i> Contact Number</label>
+                        <input type="tel" id="mess-phone" class="form-control" placeholder="10-digit mobile" required
+                            pattern="[0-9]{10}">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                    <div class="form-group">
+                        <label class="form-label"><i class="fas fa-image"></i> Upload Cover Photo</label>
+                        <input type="file" id="mess-file" class="form-control" accept="image/*"
+                            style="padding: 10px 20px;">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label"><i class="fas fa-map-marker-alt"></i> Complete Address</label>
+                        <input type="text" id="mess-address" class="form-control"
+                            placeholder="Shop 4, Bawda Main Road..." required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label"><i class="fas fa-link"></i> Or Paste Image URL <span
+                            style="color:var(--text-gray);font-weight:600;font-size:0.85rem;">(used if no file
+                            uploaded)</span></label>
+                    <input type="url" id="mess-image-url" class="form-control"
+                        placeholder="https://example.com/mess-photo.jpg">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label"><i class="fas fa-location-arrow"></i> Google Maps Link</label>
+                    <input type="url" id="mess-map" class="form-control"
+                        placeholder="Paste Google Maps link e.g. https://maps.google.com/?q=16.7050,74.2433"
+                        oninput="autoFillCoords(this.value)">
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                    <div class="form-group">
+                        <label class="form-label">Latitude</label>
+                        <input type="number" step="any" id="mess-lat" class="form-control" placeholder="16.7050"
+                            required readonly>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Longitude</label>
+                        <input type="number" step="any" id="mess-lng" class="form-control" placeholder="74.2433"
+                            required readonly>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 1.5rem; margin-top: 2rem;">
+                    <button type="submit" id="save-btn" class="btn btn-primary"
+                        style="flex: 2; height: 55px; font-size: 1.1rem;">Post Listing <i class="fas fa-check-circle"
+                            style="margin-left: 5px;"></i></button>
+                    <button type="button" onclick="closeModal()" class="btn btn-outline"
+                        style="flex: 1; border-color: #E9ECEF; color: var(--text-gray);">Discard</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- AOS Animation Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script> AOS.init({ duration: 800, once: true }); </script>
+
+
+
+    <script type="module">
+        import { authService } from './js/auth.js';
+        import { messService } from './js/mess.js';
+        import { uiService } from './js/ui.js';
+        import { supabase } from './js/supabase.js';
+
+        const grid = document.getElementById('owner-grid');
+        const loader = document.getElementById('owner-loader');
+        const form = document.getElementById('mess-form');
+
+        async function init() {
+            const isOwner = await authService.requireOwner();
+            if (!isOwner) return;
+
+            document.getElementById('user-display').innerHTML = `👤 ${authService.currentUser.email.split('@')[0]}`;
+            document.getElementById('logout-btn').onclick = () => authService.logout();
+            document.getElementById('add-mess-btn').onclick = () => openAddModal();
+
+            loadOwnerMesses();
+        }
+
+        async function loadOwnerMesses() {
+            loader.style.display = 'block';
+            grid.innerHTML = '';
+
+            try {
+                const messes = await messService.getOwnerMesses(authService.currentUser.id);
+                loader.style.display = 'none';
+
+                if (messes.length === 0) {
+                    grid.innerHTML = `
+                        <div style="grid-column: 1/-1; text-align: center; padding: 60px; background: white; border-radius: 30px; box-shadow: var(--shadow-soft);">
+                            <img src="https://cdn-icons-png.flaticon.com/512/7486/7486831.png" style="width: 100px; opacity: 0.5; margin-bottom: 20px;">
+                            <h3 style="color: var(--text-gray);">Your portfolio is empty!</h3>
+                            <p style="color: var(--text-gray); font-weight: 600;">Create a new listing to attract students.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                messes.forEach((mess, index) => {
+                    const card = document.createElement('div');
+                    card.className = 'mess-card';
+                    card.setAttribute('data-aos', 'fade-up');
+                    card.setAttribute('data-aos-delay', (index % 3) * 100);
+
+                    const vegType = mess.veg_type || mess.type || 'N/A';
+                    const catGender = mess.category || mess.gender || 'N/A';
+
+                    const vegBadgeClass = vegType.toLowerCase().includes('veg') && !vegType.toLowerCase().includes('non') ? 'badge-veg' : 'badge-nonveg';
+                    const icon = vegBadgeClass === 'badge-veg' ? 'fa-leaf' : 'fa-drumstick-bite';
+
+                    card.innerHTML = `
+                        <div class="card-img-container">
+                            <img src="${(mess.image_url && mess.image_url.trim()) ? mess.image_url.trim() : 'https://placehold.co/600x400?text=No+Image'}"
+                                 alt="${mess.name}"
+                                 referrerpolicy="no-referrer"
+                                 onerror="this.onerror=null;this.src='https://placehold.co/600x400?text=No+Image'">
+                            <div class="card-badges">
+                                <span class="badge ${vegBadgeClass}"><i class="fas ${icon}"></i> ${vegType}</span>
+                                <span class="badge badge-gender"><i class="fas fa-users"></i> ${catGender}</span>
+                            </div>
+                        </div>
+                        <div class="card-info">
+                            <h3 class="card-title">${mess.name}</h3>
+                            <div class="card-address"><i class="fas fa-map-pin" style="color: var(--primary); margin-right: 6px;"></i>${mess.address}</div>
+                            
+                            <div style="display: flex; gap: 10px; margin-top: 20px; border-top: 2px dashed rgba(0,0,0,0.05); padding-top: 15px;">
+                                <button onclick="editMess('${mess.id}')" class="btn btn-outline" style="flex: 1; border-color: var(--secondary); color: var(--secondary); padding: 10px;"><i class="fas fa-edit"></i> Edit</button>
+                                <button onclick="handleDelete('${mess.id}')" class="btn btn-outline" style="background: rgba(255,107,107,0.1); border-color: transparent; color: var(--primary); padding: 10px; flex-shrink: 0; width: 45px; display: grid; place-items: center;"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+            } catch (err) { uiService.showToast(err.message, 'error'); }
+        }
+
+        form.onsubmit = async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('save-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+
+            try {
+                const id = document.getElementById('mess-id').value;
+                const file = document.getElementById('mess-file').files[0];
+
+                const messData = {
+                    id: id || null,
+                    name: document.getElementById('mess-name').value,
+                    veg_type: document.getElementById('mess-type').value,
+                    category: document.getElementById('mess-gender').value,
+                    price: parseInt(document.getElementById('mess-price').value),
+                    phone: document.getElementById('mess-phone').value,
+                    address: document.getElementById('mess-address').value,
+                    image_url: document.getElementById('mess-image-url').value || null,
+                    map_url: document.getElementById('mess-map').value,
+                    latitude: parseFloat(document.getElementById('mess-lat').value),
+                    longitude: parseFloat(document.getElementById('mess-lng').value),
+                    owner_id: authService.currentUser.id
+                };
+
+                await messService.saveMess(messData, file);
+                uiService.showToast("Listing Synced & Live!");
+                closeModal();
+                loadOwnerMesses();
+            } catch (err) { uiService.showToast(err.message, 'error'); }
+            finally { btn.disabled = false; btn.innerHTML = 'Post Listing <i class="fas fa-check-circle" style="margin-left: 5px;"></i>'; }
+        };
+
+        window.editMess = async (id) => {
+            const { data: mess } = await supabase.from('messes').select('*').eq('id', id).single();
+            document.getElementById('mess-id').value = mess.id;
+            document.getElementById('mess-name').value = mess.name;
+            document.getElementById('mess-type').value = mess.veg_type || mess.type || 'veg';
+            document.getElementById('mess-gender').value = mess.category || mess.gender || 'mixed';
+            document.getElementById('mess-price').value = mess.price;
+            document.getElementById('mess-phone').value = mess.phone || '';
+            document.getElementById('mess-address').value = mess.address;
+            document.getElementById('mess-image-url').value = mess.image_url || '';
+            document.getElementById('mess-map').value = mess.map_url || '';
+            document.getElementById('mess-lat').value = mess.latitude || '';
+            document.getElementById('mess-lng').value = mess.longitude || '';
+
+            document.getElementById('modal-title').innerText = 'Update Your Menu';
+            uiService.openModal('mess-modal');
+        };
+
+        window.autoFillCoords = (link) => {
+            import('./js/location.js').then(({ locationService }) => {
+                const coords = locationService.extractCoordinates(link);
+                if (coords) {
+                    document.getElementById('mess-lat').value = coords.lat.toFixed(6);
+                    document.getElementById('mess-lng').value = coords.lng.toFixed(6);
+                    uiService.showToast("📍 Coordinates captured from link!");
+                }
+            });
+        };
+
+        window.handleDelete = async (id) => {
+            if (!confirm("Are you totally sure you want to delete this listing? You can't undo this!")) return;
+            try {
+                await messService.deleteMess(id, authService.currentUser.id);
+                uiService.showToast("Record successfully deleted from cloud.");
+                loadOwnerMesses();
+            } catch (err) { uiService.showToast(err.message, 'error'); }
+        };
+
+        window.openAddModal = () => {
+            form.reset();
+            document.getElementById('mess-id').value = '';
+            document.getElementById('modal-title').innerText = 'Add Menu Detail';
+            uiService.openModal('mess-modal');
+        };
+
+        window.closeModal = () => uiService.closeModal('mess-modal');
+
+        init();
+    </script>
+</body>
+
+</html>
