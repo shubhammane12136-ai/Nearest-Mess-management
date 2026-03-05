@@ -86,21 +86,27 @@ class MessService {
 
         // 2. Handle Cover Photo Upload
         if (imageFile) {
-            const fileName = `${messData.owner_id}/${Date.now()}_${imageFile.name}`;
-            const { error: uploadError } = await supabase.storage
-                .from('mess-images')
-                .upload(fileName, imageFile);
+            try {
+                const fileName = `${messData.owner_id}/${Date.now()}_${imageFile.name}`;
+                const { error: uploadError } = await supabase.storage
+                    .from('mess-images')
+                    .upload(fileName, imageFile);
 
-            if (uploadError) {
-                console.error("Image upload failed:", uploadError);
-                throw uploadError;
+                if (uploadError) {
+                    console.error("Image upload failed:", uploadError);
+                    // Continue without image if upload fails
+                } else {
+                    const { data: publicUrl } = supabase.storage
+                        .from('mess-images')
+                        .getPublicUrl(fileName);
+
+                    image_url = publicUrl.publicUrl;
+                    console.log("Image uploaded successfully:", image_url);
+                }
+            } catch (imgErr) {
+                console.error("Image processing error:", imgErr);
+                // Continue without image
             }
-
-            const { data: publicUrl } = supabase.storage
-                .from('mess-images')
-                .getPublicUrl(fileName);
-
-            image_url = publicUrl.publicUrl;
         }
 
         // 3. Prepare Final Payload
