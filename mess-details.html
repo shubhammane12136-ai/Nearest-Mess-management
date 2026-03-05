@@ -177,14 +177,6 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- Weekly Menu Section -->
-                            <div class="glass-card" style="padding: 30px; margin-top: 2rem;">
-                                <h3 style="margin-bottom: 1.5rem;"><i class="fas fa-calendar-alt" style="color: var(--primary);"></i> Weekly Meal Timetable</h3>
-                                <div id="weekly-menu-container">
-                                    <div class="spinner-lively"></div>
-                                </div>
-                            </div>
                         </div>
 
                         <!-- Action Card -->
@@ -193,23 +185,13 @@
                                 <div class="rating-box" style="justify-content: center; font-size: 1.5rem; padding: 15px; margin-bottom: 2rem;">
                                     <i class="fas fa-star"></i> ${mess.rating || '0.0'} / 5.0
                                 </div>
-
-                                <div style="background: var(--bg-main); padding: 20px; border-radius: 25px; margin-bottom: 20px; text-align: left;">
-                                    <h4 style="margin-bottom: 10px; color: var(--primary);"><i class="fas fa-utensils"></i> Today's Special</h4>
-                                    <div style="font-size: 0.9rem; font-weight: 700;">☀️ Breakfast: ${mess.breakfast || 'Not Set'}</div>
-                                    <div style="font-size: 0.9rem; font-weight: 700; margin: 8px 0;">🍱 Lunch: ${mess.lunch || 'Not Set'}</div>
-                                    <div style="font-size: 0.9rem; font-weight: 700;">🌙 Dinner: ${mess.dinner || 'Not Set'}</div>
-                                </div>
-
-                                <button onclick="handleJoin('${mess.id}')" class="btn btn-primary" style="width: 100%; height: 60px; font-size: 1.2rem; margin-bottom: 1rem; background: var(--secondary); border:none;">
-                                    Book Seat Now <i class="fas fa-plus-circle"></i>
-                                </button>
+                                <p style="color: var(--text-gray); font-weight: 700; margin-bottom: 2rem;">Interested? Connect with the owner directly to secure your spot.</p>
                                 
-                                <a href="tel:${phone}" class="btn btn-primary" style="width: 100%; height: 50px; font-size: 1.1rem; margin-bottom: 1rem;">
+                                <a href="tel:${phone}" class="btn btn-primary" style="width: 100%; height: 60px; font-size: 1.2rem; margin-bottom: 1rem;">
                                     <i class="fas fa-phone-alt"></i> Call Owner
                                 </a>
-                                <a href="https://wa.me/91${phone}" target="_blank" class="btn btn-outline" style="width: 100%; height: 50px; font-size: 1.1rem; border-color: #25D366; color: #25D366;">
-                                    <i class="fab fa-whatsapp"></i> WhatsApp
+                                <a href="https://wa.me/91${phone}" target="_blank" class="btn btn-outline" style="width: 100%; height: 60px; font-size: 1.2rem; border-color: #25D366; color: #25D366; background: rgba(37, 211, 102, 0.05);">
+                                    <i class="fab fa-whatsapp"></i> WhatsApp Me
                                 </a>
                                 <hr style="margin: 2rem 0; border: 0; border-top: 2px dashed rgba(0,0,0,0.05);">
                                 <a href="${mapUrl}" target="_blank" class="btn btn-outline" style="width: 100%; border-color: var(--secondary); color: var(--secondary);">
@@ -220,51 +202,7 @@
 
                     </div>
                 `;
-                renderWeeklyMenu(id);
             } catch (err) { uiService.showToast(err.message, 'error'); }
-        }
-
-        async function renderWeeklyMenu(messId) {
-            const container = document.getElementById('weekly-menu-container');
-            try {
-                const menu = await messService.getWeeklyMenu(messId);
-                const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-                const today = new Intl.DateTimeFormat('en-US', { weekday: 'long' }).format(new Date());
-
-                if (menu.length === 0) {
-                    container.innerHTML = `<p style="text-align:center; color: var(--text-gray); font-weight: 700;">No weekly menu available yet.</p>`;
-                    return;
-                }
-
-                container.innerHTML = `
-                    <table class="weekly-menu-table">
-                        <thead><tr><th>Day</th><th>Breakfast</th><th>Lunch</th><th>Dinner</th></tr></thead>
-                        <tbody>
-                            ${days.map(day => {
-                    const entry = menu.find(m => m.day === day) || { breakfast: '-', lunch: '-', dinner: '-' };
-                    const isToday = day === today ? 'today-highlight' : '';
-                    return `
-                                    <tr class="${isToday}">
-                                        <td>${day} ${day === today ? '📍' : ''}</td>
-                                        <td>${entry.breakfast}</td>
-                                        <td>${entry.lunch}</td>
-                                        <td>${entry.dinner}</td>
-                                    </tr>
-                                `;
-                }).join('')}
-                        </tbody>
-                    </table>
-                `;
-            } catch (e) { container.innerHTML = 'Error loading menu.'; }
-        }
-
-        window.handleJoin = async (id) => {
-            if (!confirm("Ready to join this mess?")) return;
-            try {
-                await messService.joinMess(id);
-                uiService.showToast("Great! Seat booked successfully. 🎉");
-                location.reload();
-            } catch (e) { uiService.showToast(e.message, 'error'); }
         }
 
         init();

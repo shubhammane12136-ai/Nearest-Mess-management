@@ -298,23 +298,12 @@
                             <i class="fas fa-chair"></i>
                             <span>Seats: <strong>${mess.available_seats || 0}</strong> / ${mess.total_seats || 0}</span>
                         </div>
-                        <div style="margin-top: 10px;">
-                            ${(() => {
+                        ${(() => {
                         const avail = mess.available_seats || 0;
-                        const pulseClass = avail === 0 ? 'pulse-red' : 'pulse-green';
-                        const color = avail === 0 ? '#ef4444' : '#16a34a';
-                        if (avail === 0) return `<span class="pulse pulse-red"></span><span class="status-badge status-full">Mess Full</span>`;
-                        if (avail <= 5) return `<span class="pulse" style="background:#f59e0b"></span><span class="status-badge status-few">Few Seats Left</span>`;
-                        return `<span class="pulse"></span><span class="status-badge status-available">Seats Available</span>`;
+                        if (avail === 0) return '<span class="status-badge status-full">Mess Full</span>';
+                        if (avail <= 5) return '<span class="status-badge status-few">Few Seats Left</span>';
+                        return '<span class="status-badge status-available">Seats Available</span>';
                     })()}
-                        </div>
-
-                        <!-- Today's Menu Preview -->
-                        <div class="menu-preview">
-                            <div class="menu-item"><span>🍳 Breakfast</span> <strong>${mess.breakfast || 'Not Set'}</strong></div>
-                            <div class="menu-item"><span>🍚 Lunch</span> <strong>${mess.lunch || 'Not Set'}</strong></div>
-                            <div class="menu-item"><span>🍲 Dinner</span> <strong>${mess.dinner || 'Not Set'}</strong></div>
-                        </div>
                         
                         <div class="card-footer">
                             <div class="rating-box">
@@ -326,27 +315,15 @@
                             </div>
                         </div>
 
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px;">
-                            <a href="mess-details.html?id=${mess.id}" class="btn btn-outline" style="padding: 10px; font-size: 0.9rem;">Details <i class="fas fa-info-circle"></i></a>
-                            <button onclick="handleJoin('${mess.id}')" class="btn btn-primary" style="padding: 10px; font-size: 0.9rem; background: var(--secondary); border: none;">Join Mess <i class="fas fa-plus"></i></button>
+                        <div style="display: flex; gap: 10px; margin-top: 15px;">
+                            <a href="mess-details.html?id=${mess.id}" class="btn btn-outline" style="flex: 1; border-color: var(--secondary); color: var(--secondary); padding: 10px;">Details <i class="fas fa-info-circle"></i></a>
+                            <a href="${mapUrl}" target="_blank" class="btn btn-primary" style="flex: 1; padding: 10px;">Maps <i class="fas fa-map-marked-alt"></i></a>
                         </div>
-                        <div style="display: flex; gap: 10px; margin-top: 10px;">
-                            <a href="${mapUrl}" target="_blank" class="btn btn-outline" style="flex: 1; padding: 10px; font-size: 0.9rem; border-color: #E9ECEF;">Maps <i class="fas fa-map-marked-alt"></i></a>
-                            <button onclick="handleRating('${mess.id}')" class="btn btn-outline" style="flex: 1; padding: 10px; font-size: 0.9rem; border-color: #E9ECEF;">Rate ⭐</button>
-                        </div>
+                        <button onclick="handleRating('${mess.id}')" class="btn btn-outline" style="width: 100%; margin-top: 10px; border-color: #E9ECEF; color: var(--text-gray); padding: 8px;">⭐ Rate this Mess</button>
                     </div>
                 `;
                 container.appendChild(card);
             });
-        }
-
-        window.handleJoin = async (id) => {
-            if (!confirm("Are you sure you want to join this mess? This will book one seat for you.")) return;
-            try {
-                await messService.joinMess(id);
-                uiService.showToast("Congratulations! You have joined the mess. 🎉");
-                loadMesses();
-            } catch (e) { uiService.showToast(e.message, 'error'); }
         }
 
         window.handleRating = async (id) => {

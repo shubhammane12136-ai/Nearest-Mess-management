@@ -142,15 +142,6 @@
                         oninput="autoFillCoords(this.value)">
                 </div>
 
-                <div style="background: var(--bg-main); padding: 20px; border-radius: 20px; margin-bottom: 1.5rem;">
-                    <h4 style="margin-bottom: 15px;"><i class="fas fa-utensils"></i> Today's Special Menu</h4>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
-                        <input type="text" id="mess-breakfast" class="form-control" placeholder="Breakfast">
-                        <input type="text" id="mess-lunch" class="form-control" placeholder="Lunch">
-                        <input type="text" id="mess-dinner" class="form-control" placeholder="Dinner">
-                    </div>
-                </div>
-
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
                     <div class="form-group">
                         <label class="form-label"><i class="fas fa-users-cog"></i> Total Seats</label>
@@ -183,37 +174,6 @@
                         style="flex: 1; border-color: #E9ECEF; color: var(--text-gray);">Discard</button>
                 </div>
             </form>
-        </div>
-    </div>
-
-    <!-- Weekly Menu Modal -->
-    <div id="menu-modal" class="modal-overlay">
-        <div class="modal-content">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-                <h2 style="font-size: 2rem;">Manage Weekly Timetable</h2>
-                <button onclick="closeMenuModal()" class="theme-toggle"><i class="fas fa-times"></i></button>
-            </div>
-
-            <form id="menu-day-form"
-                style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; background: var(--bg-main); padding: 20px; border-radius: 20px; margin-bottom: 20px;">
-                <select id="menu-day" class="form-control" required>
-                    <option value="Monday">Monday</option>
-                    <option value="Tuesday">Tuesday</option>
-                    <option value="Wednesday">Wednesday</option>
-                    <option value="Thursday">Thursday</option>
-                    <option value="Friday">Friday</option>
-                    <option value="Saturday">Saturday</option>
-                    <option value="Sunday">Sunday</option>
-                </select>
-                <input type="text" id="menu-breakfast" class="form-control" placeholder="Breakfast Menu" required>
-                <input type="text" id="menu-lunch" class="form-control" placeholder="Lunch Menu" required>
-                <input type="text" id="menu-dinner" class="form-control" placeholder="Dinner Menu" required>
-                <button type="submit" class="btn btn-primary" style="grid-column: span 3;">Save This Day</button>
-            </form>
-
-            <div id="menu-list-container">
-                <!-- Table of weekly menu -->
-            </div>
         </div>
     </div>
 
@@ -292,7 +252,6 @@
                             
                             <div style="display: flex; gap: 10px; margin-top: 20px; border-top: 2px dashed rgba(0,0,0,0.05); padding-top: 15px;">
                                 <button onclick="editMess('${mess.id}')" class="btn btn-outline" style="flex: 1; border-color: var(--secondary); color: var(--secondary); padding: 10px;"><i class="fas fa-edit"></i> Edit</button>
-                                <button onclick="openMenuManager('${mess.id}')" class="btn btn-outline" style="flex: 1; border-color: var(--primary); color: var(--primary); padding: 10px;"><i class="fas fa-calendar-alt"></i> Menu</button>
                                 <button onclick="handleDelete('${mess.id}')" class="btn btn-outline" style="background: rgba(255,107,107,0.1); border-color: transparent; color: var(--primary); padding: 10px; flex-shrink: 0; width: 45px; display: grid; place-items: center;"><i class="fas fa-trash"></i></button>
                             </div>
                         </div>
@@ -326,9 +285,6 @@
                     longitude: parseFloat(document.getElementById('mess-lng').value),
                     total_seats: parseInt(document.getElementById('mess-total-seats').value),
                     available_seats: parseInt(document.getElementById('mess-available-seats').value),
-                    breakfast: document.getElementById('mess-breakfast').value,
-                    lunch: document.getElementById('mess-lunch').value,
-                    dinner: document.getElementById('mess-dinner').value,
                     owner_id: authService.currentUser.id
                 };
 
@@ -351,9 +307,6 @@
             document.getElementById('mess-address').value = mess.address;
             document.getElementById('mess-image-url').value = mess.image_url || '';
             document.getElementById('mess-map').value = mess.map_url || '';
-            document.getElementById('mess-breakfast').value = mess.breakfast || '';
-            document.getElementById('mess-lunch').value = mess.lunch || '';
-            document.getElementById('mess-dinner').value = mess.dinner || '';
             document.getElementById('mess-lat').value = mess.latitude || '';
             document.getElementById('mess-lng').value = mess.longitude || '';
             document.getElementById('mess-total-seats').value = mess.total_seats || 0;
@@ -391,67 +344,6 @@
         };
 
         window.closeModal = () => uiService.closeModal('mess-modal');
-
-        // Weekly Menu Management
-        let currentEditingMessId = null;
-        window.openMenuManager = async (messId) => {
-            currentEditingMessId = messId;
-            renderWeeklyMenuTable();
-            document.getElementById('menu-modal').style.display = 'flex';
-        };
-
-        window.closeMenuModal = () => {
-            document.getElementById('menu-modal').style.display = 'none';
-        }
-
-        async function renderWeeklyMenuTable() {
-            const container = document.getElementById('menu-list-container');
-            container.innerHTML = '<div class="spinner-lively"></div>';
-
-            try {
-                const menu = await messService.getWeeklyMenu(currentEditingMessId);
-                container.innerHTML = `
-                    <table class="weekly-menu-table">
-                        <thead><tr><th>Day</th><th>Breakfast</th><th>Lunch</th><th>Dinner</th><th>Action</th></tr></thead>
-                        <tbody>
-                            ${menu.length ? menu.map(m => `
-                                <tr>
-                                    <td>${m.day}</td>
-                                    <td>${m.breakfast}</td>
-                                    <td>${m.lunch}</td>
-                                    <td>${m.dinner}</td>
-                                    <td><button onclick="deleteMenuDay('${m.id}')" class="btn btn-outline" style="color:red; border:none; padding:5px;"><i class="fas fa-trash"></i></button></td>
-                                </tr>
-                            `).join('') : '<tr><td colspan="5" style="text-align:center;">No menu setup for this mess yet.</td></tr>'}
-                        </tbody>
-                    </table>
-                `;
-            } catch (e) { uiService.showToast(e.message, 'error'); }
-        }
-
-        document.getElementById('menu-day-form').onsubmit = async (e) => {
-            e.preventDefault();
-            const data = {
-                mess_id: currentEditingMessId,
-                day: document.getElementById('menu-day').value,
-                breakfast: document.getElementById('menu-breakfast').value,
-                lunch: document.getElementById('menu-lunch').value,
-                dinner: document.getElementById('menu-dinner').value
-            };
-            try {
-                await messService.saveMenuDay(data);
-                uiService.showToast("Day updated successfully!");
-                renderWeeklyMenuTable();
-            } catch (err) { uiService.showToast(err.message, 'error'); }
-        };
-
-        window.deleteMenuDay = async (id) => {
-            if (!confirm("Delete this day from timetable?")) return;
-            try {
-                await messService.deleteMenuDay(id);
-                renderWeeklyMenuTable();
-            } catch (err) { uiService.showToast(err.message, 'error'); }
-        }
 
         init();
     </script>
