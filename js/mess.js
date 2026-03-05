@@ -67,16 +67,26 @@ class MessService {
 
     // Comprehensive saving logic (New vs Edit)
     async saveMess(messData, imageFile = null) {
+        // 1. Validate form inputs before sending request - only check required fields
+        if (!messData.name || !messData.veg_type || !messData.category || !messData.price || !messData.phone || !messData.address || !messData.owner_id) {
+            throw new Error("All required fields must be filled");
+        }
+
+        console.log("Sending mess data:", messData);
+
         let image_url = messData.image_url;
 
-        // 1. Handle Cover Photo Upload
+        // 2. Handle Cover Photo Upload
         if (imageFile) {
             const fileName = `${messData.owner_id}/${Date.now()}_${imageFile.name}`;
             const { error: uploadError } = await supabase.storage
                 .from('mess-images')
                 .upload(fileName, imageFile);
 
-            if (uploadError) throw uploadError;
+            if (uploadError) {
+                console.error("Image upload failed:", uploadError);
+                throw uploadError;
+            }
 
             const { data: publicUrl } = supabase.storage
                 .from('mess-images')
@@ -85,10 +95,23 @@ class MessService {
             image_url = publicUrl.publicUrl;
         }
 
-        // 2. Prepare Final Payload
+        // 3. Prepare Final Payload
         const id = messData.id || null;
-        const { ...payload } = { ...messData, image_url };
-        delete payload.id; // Don't send id in the body, use it in the query
+        const payload = {
+            name: messData.name,
+            veg_type: messData.veg_type,
+            category: messData.category,
+            price: messData.price,
+            phone: messData.phone,
+            address: messData.address,
+            image_url: image_url,
+            map_url: messData.map_url,
+            latitude: messData.latitude,
+            longitude: messData.longitude,
+            total_seats: messData.total_seats,
+            available_seats: messData.available_seats,
+            owner_id: messData.owner_id
+        };
 
         if (id) {
             // Update Existing Mess (Requires matching owner_id)
@@ -97,13 +120,31 @@ class MessService {
                 .update(payload)
                 .eq('id', id)
                 .eq('owner_id', messData.owner_id);
-            if (error) throw error;
+            if (error) {
+                console.error("Update failed:", error);
+                throw error;
+            }
+            console.log("Mess updated successfully");
         } else {
-            // Insert New Mess to Supabase
+            // Insert New Mess to Supabase with performance logging
+            console.log("User ID:", messData.owner_id);
+
+            const start = performance.now();
+
             const { error } = await supabase
                 .from('messes')
                 .insert([payload]);
-            if (error) throw error;
+
+            const end = performance.now();
+
+            console.log("Insert time:", (end - start).toFixed(2), "ms");
+
+            if (error) {
+                console.error("Insert failed:", error);
+                throw error;
+            } else {
+                console.log("Mess saved successfully");
+            }
         }
     }
 

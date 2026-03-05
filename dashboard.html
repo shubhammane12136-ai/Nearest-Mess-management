@@ -45,9 +45,14 @@
                 <p style="color: var(--text-gray); font-weight: 600; font-size: 1.1rem;">Manage your profile and attract
                     more students.</p>
             </div>
-            <button id="add-mess-btn" class="btn btn-primary" style="height: 55px; font-size: 1.1rem;">
-                <i class="fas fa-plus-circle"></i> Create New Listing
-            </button>
+            <div style="display: flex; gap: 1rem;">
+                <button id="check-db-btn" class="btn btn-outline" style="height: 55px; font-size: 1.1rem; border-color: #E9ECEF; color: var(--text-gray);">
+                    <i class="fas fa-database"></i> Check Database
+                </button>
+                <button id="add-mess-btn" class="btn btn-primary" style="height: 55px; font-size: 1.1rem;">
+                    <i class="fas fa-plus-circle"></i> Create New Listing
+                </button>
+            </div>
         </div>
 
         <div id="owner-loader" style="display: none;">
@@ -145,24 +150,22 @@
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
                     <div class="form-group">
                         <label class="form-label"><i class="fas fa-users-cog"></i> Total Seats</label>
-                        <input type="number" id="mess-total-seats" class="form-control" placeholder="30" required>
+                        <input type="number" id="mess-total-seats" class="form-control" placeholder="30">
                     </div>
                     <div class="form-group">
                         <label class="form-label"><i class="fas fa-chair"></i> Available Seats</label>
-                        <input type="number" id="mess-available-seats" class="form-control" placeholder="10" required>
+                        <input type="number" id="mess-available-seats" class="form-control" placeholder="10">
                     </div>
                 </div>
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
                     <div class="form-group">
                         <label class="form-label">Latitude</label>
-                        <input type="number" step="any" id="mess-lat" class="form-control" placeholder="16.7050"
-                            required readonly>
+                        <input type="number" step="any" id="mess-lat" class="form-control" placeholder="16.7050" readonly>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Longitude</label>
-                        <input type="number" step="any" id="mess-lng" class="form-control" placeholder="74.2433"
-                            required readonly>
+                        <input type="number" step="any" id="mess-lng" class="form-control" placeholder="74.2433" readonly>
                     </div>
                 </div>
 
@@ -200,6 +203,7 @@
             document.getElementById('user-display').innerHTML = `👤 ${authService.currentUser.email.split('@')[0]}`;
             document.getElementById('logout-btn').onclick = () => authService.logout();
             document.getElementById('add-mess-btn').onclick = () => openAddModal();
+            document.getElementById('check-db-btn').onclick = () => checkDatabase();
 
             loadOwnerMesses();
         }
@@ -261,39 +265,120 @@
             } catch (err) { uiService.showToast(err.message, 'error'); }
         }
 
+        async function checkDatabase() {
+            try {
+                const { data, error } = await supabase.from('messes').select('*');
+                if (error) {
+                    console.error("Database check failed:", error);
+                    uiService.showToast("Database check failed: " + error.message, 'error');
+                } else {
+                    console.log("Database check successful. Total records:", data.length);
+                    console.log("All mess records:", data);
+                    uiService.showToast(`Database check complete. Found ${data.length} records.`, 'success');
+                }
+            } catch (err) {
+                console.error("Database check error:", err);
+                uiService.showToast("Database check error: " + err.message, 'error');
+            }
+        }
+
         form.onsubmit = async (e) => {
             e.preventDefault();
             const btn = document.getElementById('save-btn');
             btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
 
             try {
                 const id = document.getElementById('mess-id').value;
                 const file = document.getElementById('mess-file').files[0];
 
+                // Get values correctly from inputs
+                const name = document.getElementById('mess-name').value.trim();
+                const vegType = document.getElementById('mess-type').value;
+                const category = document.getElementById('mess-gender').value;
+                const price = document.getElementById('mess-price').value;
+                const phone = document.getElementById('mess-phone').value.trim();
+                const address = document.getElementById('mess-address').value.trim();
+                const totalSeats = document.getElementById('mess-total-seats').value;
+                const availableSeats = document.getElementById('mess-available-seats').value;
+                const imageUrl = document.getElementById('mess-image-url').value.trim();
+                const mapUrl = document.getElementById('mess-map').value.trim();
+                const latitude = document.getElementById('mess-lat').value;
+                const longitude = document.getElementById('mess-lng').value;
+
+                // Log values before validation
+                console.log("Form values:", {
+                    name,
+                    vegType,
+                    category,
+                    price,
+                    phone,
+                    address,
+                    totalSeats,
+                    availableSeats,
+                    latitude,
+                    longitude
+                });
+
+                // Quick debug
+                console.log("Name:", name);
+                console.log("Veg Type:", vegType);
+                console.log("Category:", category);
+
+                // Correct validation logic - only check required fields
+                if (!name || !vegType || !category || !price || !phone || !address) {
+                    throw new Error("Please fill all required fields correctly.");
+                }
+
+                if (phone.length !== 10 || !/^\d{10}$/.test(phone)) {
+                    throw new Error("Phone number must be exactly 10 digits.");
+                }
+
                 const messData = {
                     id: id || null,
-                    name: document.getElementById('mess-name').value,
-                    veg_type: document.getElementById('mess-type').value,
-                    category: document.getElementById('mess-gender').value,
-                    price: parseInt(document.getElementById('mess-price').value),
-                    phone: document.getElementById('mess-phone').value,
-                    address: document.getElementById('mess-address').value,
-                    image_url: document.getElementById('mess-image-url').value || null,
-                    map_url: document.getElementById('mess-map').value,
-                    latitude: parseFloat(document.getElementById('mess-lat').value),
-                    longitude: parseFloat(document.getElementById('mess-lng').value),
-                    total_seats: parseInt(document.getElementById('mess-total-seats').value),
-                    available_seats: parseInt(document.getElementById('mess-available-seats').value),
+                    name: name,
+                    veg_type: vegType,
+                    category: category,
+                    price: parseInt(price),
+                    phone: phone,
+                    address: address,
+                    image_url: imageUrl || null,
+                    map_url: mapUrl,
+                    latitude: latitude ? parseFloat(latitude) : null,
+                    longitude: longitude ? parseFloat(longitude) : null,
+                    total_seats: totalSeats ? parseInt(totalSeats) : 0,
+                    available_seats: availableSeats ? parseInt(availableSeats) : 0,
                     owner_id: authService.currentUser.id
                 };
 
                 await messService.saveMess(messData, file);
-                uiService.showToast("Listing Synced & Live!");
+                uiService.showToast("Listing saved instantly!");
                 closeModal();
                 loadOwnerMesses();
-            } catch (err) { uiService.showToast(err.message, 'error'); }
-            finally { btn.disabled = false; btn.innerHTML = 'Post Listing <i class="fas fa-check-circle" style="margin-left: 5px;"></i>'; }
+            } catch (err) {
+                console.error("Supabase error:", err.message);
+                console.error("Full error details:", err);
+
+                let errorMessage = "Failed to save listing. ";
+                if (err.message.includes("duplicate key")) {
+                    errorMessage += "This mess name already exists.";
+                } else if (err.message.includes("permission denied") || err.message.includes("RLS")) {
+                    errorMessage += "Permission denied. Check your account permissions.";
+                } else if (err.message.includes("relation") && err.message.includes("does not exist")) {
+                    errorMessage += "Database table not found. Contact support.";
+                } else if (err.message.includes("column")) {
+                    errorMessage += "Invalid data format. Check all fields.";
+                } else if (err.message.includes("network") || err.message.includes("fetch")) {
+                    errorMessage += "Network error. Check your connection.";
+                } else {
+                    errorMessage += err.message;
+                }
+
+                uiService.showToast(errorMessage, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'Post Listing <i class="fas fa-check-circle" style="margin-left: 5px;"></i>';
+            }
         };
 
         window.editMess = async (id) => {
