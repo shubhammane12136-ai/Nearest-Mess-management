@@ -292,6 +292,18 @@
                         <div class="card-address">
                             <i class="fas fa-map-pin" style="color: var(--primary); margin-right: 6px;"></i>${mess.address || 'Address not listed'}
                         </div>
+
+                        <!-- Seat Availability Feature -->
+                        <div class="seats-info">
+                            <i class="fas fa-chair"></i>
+                            <span>Seats: <strong>${mess.available_seats || 0}</strong> / ${mess.total_seats || 0}</span>
+                        </div>
+                        ${(() => {
+                        const avail = mess.available_seats || 0;
+                        if (avail === 0) return '<span class="status-badge status-full">Mess Full</span>';
+                        if (avail <= 5) return '<span class="status-badge status-few">Few Seats Left</span>';
+                        return '<span class="status-badge status-available">Seats Available</span>';
+                    })()}
                         
                         <div class="card-footer">
                             <div class="rating-box">

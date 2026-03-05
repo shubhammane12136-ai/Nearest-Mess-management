@@ -610,3 +610,47 @@ nav {
     font-size: 2.5rem;
   }
 }
+
+/* Seat Availability Status Badges */
+.status-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  font-weight: 800;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 8px;
+}
+
+.status-available {
+  background: #16a34a;
+  color: white;
+  box-shadow: 0 4px 10px rgba(22, 163, 74, 0.2);
+}
+
+.status-few {
+  background: #f59e0b;
+  color: white;
+  box-shadow: 0 4px 10px rgba(245, 158, 11, 0.2);
+}
+
+.status-full {
+  background: #ef4444;
+  color: white;
+  box-shadow: 0 4px 10px rgba(239, 68, 68, 0.2);
+}
+
+.seats-info {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-gray);
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.seats-info i {
+  color: var(--primary);
+}

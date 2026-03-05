@@ -144,6 +144,17 @@
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
                     <div class="form-group">
+                        <label class="form-label"><i class="fas fa-users-cog"></i> Total Seats</label>
+                        <input type="number" id="mess-total-seats" class="form-control" placeholder="30" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label"><i class="fas fa-chair"></i> Available Seats</label>
+                        <input type="number" id="mess-available-seats" class="form-control" placeholder="10" required>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                    <div class="form-group">
                         <label class="form-label">Latitude</label>
                         <input type="number" step="any" id="mess-lat" class="form-control" placeholder="16.7050"
                             required readonly>
@@ -272,6 +283,8 @@
                     map_url: document.getElementById('mess-map').value,
                     latitude: parseFloat(document.getElementById('mess-lat').value),
                     longitude: parseFloat(document.getElementById('mess-lng').value),
+                    total_seats: parseInt(document.getElementById('mess-total-seats').value),
+                    available_seats: parseInt(document.getElementById('mess-available-seats').value),
                     owner_id: authService.currentUser.id
                 };
 
@@ -296,6 +309,8 @@
             document.getElementById('mess-map').value = mess.map_url || '';
             document.getElementById('mess-lat').value = mess.latitude || '';
             document.getElementById('mess-lng').value = mess.longitude || '';
+            document.getElementById('mess-total-seats').value = mess.total_seats || 0;
+            document.getElementById('mess-available-seats').value = mess.available_seats || 0;
 
             document.getElementById('modal-title').innerText = 'Update Your Menu';
             uiService.openModal('mess-modal');
