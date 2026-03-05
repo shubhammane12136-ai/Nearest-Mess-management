@@ -118,6 +118,55 @@ class MessService {
         if (error) throw error;
     }
 
+    // --- Menu Management ---
+
+    async getWeeklyMenu(messId) {
+        const { data, error } = await supabase
+            .from('mess_menu')
+            .select('*')
+            .eq('mess_id', messId);
+        if (error) throw error;
+        return data;
+    }
+
+    async saveMenuDay(menuData) {
+        const { error } = await supabase
+            .from('mess_menu')
+            .upsert([menuData], { onConflict: 'mess_id,day' });
+        if (error) throw error;
+    }
+
+    async deleteMenuDay(id) {
+        const { error } = await supabase
+            .from('mess_menu')
+            .delete()
+            .eq('id', id);
+        if (error) throw error;
+    }
+
+    // --- Student Actions ---
+
+    async joinMess(messId) {
+        // 1. Check current seats
+        const { data: mess, error: fetchError } = await supabase
+            .from('messes')
+            .select('available_seats')
+            .eq('id', messId)
+            .single();
+
+        if (fetchError) throw fetchError;
+        if (mess.available_seats <= 0) throw new Error("This mess is currently full!");
+
+        // 2. Decrement seats
+        const { error: updateError } = await supabase
+            .from('messes')
+            .update({ available_seats: mess.available_seats - 1 })
+            .eq('id', messId);
+
+        if (updateError) throw updateError;
+        return true;
+    }
+
     // --- Distance Math Helper ---
 
     calculateDistance(lat1, lon1, lat2, lon2) {
