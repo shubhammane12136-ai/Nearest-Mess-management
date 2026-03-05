@@ -4,326 +4,605 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SmartMess | Fresh Food Nearby</title>
-    <!-- Animations -->
+    <title>SmartMess Finder | Best Food Near DY Patil College</title>
+
+    <!-- Meta Tags for SEO -->
+    <meta name="description"
+        content="Discover affordable and hygienic mess services near DY Patil College with SmartMess Finder. Find the best food, view images, and get directions instantly.">
+    <meta name="keywords"
+        content="SmartMess, DY Patil College, Mess Finder, Student Food, Akurdi Mess, Best Mess Akurdi">
+
+    <!-- AOS Library for Scroll Animations -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
     <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3075/3075977.png">
 
+    <style>
+        /* Modern Landing Page Specific Enhancements */
+        :root {
+            --landing-gradient: linear-gradient(135deg, #6366f1 0%, #22c55e 100%);
+        }
+
+        .hero {
+            min-height: 85vh;
+            background: var(--landing-gradient);
+            color: white;
+            padding: 160px 20px 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('https://www.transparenttextures.com/patterns/cubes.png');
+            opacity: 0.1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 10;
+            max-width: 900px;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 8vw, 4.5rem);
+            color: white;
+            line-height: 1.1;
+            margin-bottom: 2rem;
+            text-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 3rem;
+            font-weight: 600;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-white {
+            background: white;
+            color: #6366f1;
+            padding: 16px 40px;
+            font-size: 1.1rem;
+        }
+
+        .btn-white:hover {
+            background: #f8f9fa;
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-outline-white {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+            padding: 16px 40px;
+            font-size: 1.1rem;
+        }
+
+        .btn-outline-white:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-5px);
+        }
+
+        /* Features Section */
+        .features {
+            padding: 100px 0;
+            background: var(--bg-main);
+        }
+
+        .feature-card {
+            background: var(--bg-card);
+            padding: 40px;
+            border-radius: var(--radius-xl);
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 2px solid transparent;
+            box-shadow: var(--shadow-soft);
+            height: 100%;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-15px);
+            border-color: var(--primary-light);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .feature-card i {
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 107, 107, 0.1);
+            color: var(--primary);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            margin: 0 auto 25px;
+            transition: 0.3s;
+        }
+
+        .feature-card:hover i {
+            background: var(--primary);
+            color: white;
+            transform: rotate(10deg);
+        }
+
+        /* How it Works */
+        .how-it-works {
+            padding: 100px 0;
+            background: var(--bg-card);
+        }
+
+        .step-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 40px;
+            margin-top: 60px;
+        }
+
+        .step-item {
+            position: relative;
+            padding: 20px;
+        }
+
+        .step-number {
+            font-size: 5rem;
+            font-weight: 900;
+            color: rgba(255, 107, 107, 0.05);
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1;
+        }
+
+        .step-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .step-content h3 {
+            margin-top: 20px;
+            color: var(--text-dark);
+        }
+
+        /* Mess Preview Animation */
+        .preview-section {
+            padding: 100px 0;
+            text-align: center;
+            background: var(--bg-main);
+            overflow: hidden;
+        }
+
+        .mess-preview-track {
+            display: flex;
+            gap: 30px;
+            margin-top: 60px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .preview-img-wrapper {
+            width: 280px;
+            height: 380px;
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            box-shadow: var(--shadow-soft);
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+
+        .preview-img-wrapper:hover {
+            transform: scale(1.08) rotate(2deg);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .preview-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .preview-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 20px;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+            color: white;
+            text-align: left;
+            opacity: 0;
+            transition: 0.3s;
+        }
+
+        .preview-img-wrapper:hover .preview-overlay {
+            opacity: 1;
+        }
+
+        /* Call to Action */
+        .cta {
+            padding: 120px 20px;
+            text-align: center;
+            background: var(--landing-gradient);
+            color: white;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--bg-card);
+            padding: 80px 0 40px;
+            color: var(--text-dark);
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 50px;
+            margin-bottom: 60px;
+        }
+
+        .footer-logo {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .footer-links h4 {
+            margin-bottom: 25px;
+            font-size: 1.2rem;
+        }
+
+        .footer-links ul {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 15px;
+        }
+
+        .footer-links a {
+            color: var(--text-gray);
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary);
+            padding-left: 5px;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .social-icons a {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(134, 142, 150, 0.1);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: 0.3s;
+        }
+
+        .social-icons a:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-5px);
+        }
+
+        .copyright {
+            padding-top: 40px;
+            border-top: 2px dashed rgba(134, 142, 150, 0.1);
+            text-align: center;
+            color: var(--text-gray);
+            font-weight: 700;
+        }
+
+        /* Theme Toggle Fix for Landing */
+        .hero .theme-toggle {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.3);
+            color: white;
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 768px) {
+            .hero {
+                padding-top: 120px;
+            }
+
+            .hero h1 {
+                font-size: 2.8rem;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .hero-buttons .btn {
+                width: 100%;
+            }
+
+            .preview-img-wrapper {
+                width: 100%;
+                height: 300px;
+            }
+        }
+    </style>
 </head>
 
 <body>
-
-    <!-- Lively Background Shapes -->
-    <div class="bg-shape shape-1"></div>
-    <div class="bg-shape shape-2"></div>
 
     <nav id="navbar">
         <div class="nav-container">
             <a href="index.html" class="logo"><i class="fas fa-pizza-slice"></i> SmartMess</a>
             <div id="nav-actions" style="display: flex; gap: 1rem; align-items: center;">
                 <button class="theme-toggle" onclick="window.toggleTheme()" title="Toggle Dark/Light Mode">
-                    <i class="fas fa-moon" style="color: #2A363B;"></i>
+                    <i class="fas fa-moon"></i>
                 </button>
-                <a href="login.html" class="btn btn-outline">Login</a>
-                <a href="register.html" class="btn btn-primary">Sign Up</a>
+                <a href="login.html" class="btn btn-outline" id="nav-login">Login</a>
+                <a href="register.html" class="btn btn-primary" id="nav-signup">Sign Up</a>
             </div>
         </div>
     </nav>
 
     <header class="hero">
-        <h1 class="animate-pop-in delay-1">Find the freshest <br><span style="color: var(--primary);">daily meals</span>
-            near you.</h1>
-        <p class="animate-pop-in delay-2">We connect DY Patil students with top-rated local messes. Say goodbye to bad
-            food days.</p>
+        <div class="container hero-content">
+            <h1 data-aos="fade-up">Find the Best Mess <br>Near Your College 🍽️</h1>
+            <p data-aos="fade-up" data-aos-delay="100">SmartMess Finder helps students near DY Patil College discover
+                affordable, hygienic, and home-like mess services in just a few clicks.</p>
 
-        <!-- Floating Search & Filter Bar -->
-        <div class="search-float-bar animate-pop-in delay-3" style="width: 100%;">
-            <div class="search-input-group">
-                <i class="fas fa-search"></i>
-                <input type="text" id="search-input" placeholder="Search by mess name or area...">
+            <div class="hero-buttons" data-aos="fade-up" data-aos-delay="200" id="hero-cta">
+                <a href="login.html" class="btn btn-white">Find My Mess</a>
+                <a href="register.html?role=owner" class="btn btn-outline-white">Register Your Mess</a>
             </div>
-
-            <div style="width: 2px; height: 30px; background: #E9ECEF; margin: 0 10px;" class="desktop-only"></div>
-
-            <select id="type-filter" class="filter-select">
-                <option value="all">🍽️ All Food Types</option>
-                <option value="veg">🥬 Pure Veg</option>
-                <option value="non-veg">🍗 Non-Veg</option>
-                <option value="both">🍱 Veg & Non-Veg</option>
-            </select>
-
-            <div style="width: 2px; height: 30px; background: #E9ECEF; margin: 0 10px;" class="desktop-only"></div>
-
-            <select id="gender-filter" class="filter-select">
-                <option value="all">👥 All Categories</option>
-                <option value="boys">👨 Boys Only</option>
-                <option value="girls">👩 Girls Only</option>
-                <option value="mixed">👫 Mixed Batch</option>
-            </select>
-
-            <button id="search-btn" class="btn btn-primary" style="margin-left: 10px; height: 50px;">
-                Find Matches
-            </button>
         </div>
     </header>
 
-    <main class="container" id="messes" style="margin-bottom: 100px;">
-        <div class="section-title" data-aos="fade-up">
-            <h2 style="font-size: 2.25rem;">Popular Spots Near DYP</h2>
-            <span
-                style="background: rgba(78, 205, 196, 0.1); color: var(--secondary); padding: 8px 16px; border-radius: 100px; font-weight: 800; font-size: 0.9rem;">
-                <i class="fas fa-bolt" style="color: #FFD43B;"></i> Real-time Info
-            </span>
-        </div>
+    <section class="features" id="why-us">
+        <div class="container text-center">
+            <h2 data-aos="fade-up">Why Use SmartMess?</h2>
+            <p data-aos="fade-up" data-aos-delay="100"
+                style="color: var(--text-gray); max-width: 600px; margin: 10px auto 50px;">We've built the easiest way
+                for DY Patil students to find quality meals.</p>
 
-        <div id="mess-loader" style="display: none;">
-            <div class="spinner-lively"></div>
-        </div>
-
-        <div id="messList" class="mess-grid">
-            <!-- Dynamic Mess Cards -->
-        </div>
-    </main>
-
-    <footer style="background: white; padding: 60px 0; text-align: center; border-top: 2px dashed rgba(0,0,0,0.05);">
-        <div class="container">
-            <h2 class="logo" style="justify-content: center; margin-bottom: 20px;"><i class="fas fa-pizza-slice"></i>
-                SmartMess</h2>
-            <p style="color: var(--text-gray); font-weight: 600; max-width: 500px; margin: 0 auto 30px;">
-                Making student life tastier. We verify local food providers so you don't have to worry about your next
-                meal.
-            </p>
-            <div
-                style="display: flex; justify-content: center; gap: 20px; font-size: 1.5rem; color: var(--primary); margin-bottom: 20px;">
-                <i class="fab fa-instagram" style="cursor: pointer; transition: 0.3s;"
-                    onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'"></i>
-                <i class="fab fa-twitter" style="cursor: pointer; transition: 0.3s;"
-                    onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'"></i>
+            <div class="mess-grid">
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
+                    <i class="fas fa-map-marked-alt"></i>
+                    <h3>Near Your College</h3>
+                    <p>Filter messes by their proximity to DY Patil campus. Find food just a 2-minute walk away.</p>
+                </div>
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
+                    <i class="fas fa-camera-retro"></i>
+                    <h3>View Mess Images</h3>
+                    <p>Don't guess what the food looks like. Browse real photos of mess areas and daily menus.</p>
+                </div>
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="300">
+                    <i class="fas fa-location-arrow"></i>
+                    <h3>Google Maps Directions</h3>
+                    <p>Integrate directly with Maps to get one-tap navigation to any mess in Akurdi.</p>
+                </div>
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="400">
+                    <i class="fas fa-comment-dots"></i>
+                    <h3>Direct Contact</h3>
+                    <p>Have questions? Message or call the mess owners directly through our platform.</p>
+                </div>
             </div>
-            <p style="color: #ADB5BD; font-size: 0.9rem; font-weight: 700;">&copy; 2026 SmartMess Finder. Built for
-                Students.</p>
+        </div>
+    </section>
+
+    <section class="how-it-works">
+        <div class="container text-center">
+            <h2 data-aos="fade-up">How It Works</h2>
+            <div class="step-container">
+                <div class="step-item" data-aos="fade-right">
+                    <div class="step-number">01</div>
+                    <div class="step-content">
+                        <h3>Create Account</h3>
+                        <p>Sign up as a student to unlock the full mess dashboard and ratings.</p>
+                    </div>
+                </div>
+                <div class="step-item" data-aos="fade-up">
+                    <div class="step-number">02</div>
+                    <div class="step-content">
+                        <h3>Discover & Filter</h3>
+                        <p>Use our smart filters to find Veg, Non-Veg, or Boys/Girls specific messes.</p>
+                    </div>
+                </div>
+                <div class="step-item" data-aos="fade-left">
+                    <div class="step-number">03</div>
+                    <div class="step-content">
+                        <h3>Book & Enjoy</h3>
+                        <p>Visit the mess, verify the quality, and start your subscription with confidence.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="preview-section">
+        <div class="container">
+            <h2 data-aos="fade-up">Discover Top-Rated Services</h2>
+            <div class="mess-preview-track">
+                <div class="preview-img-wrapper" data-aos="zoom-in" data-aos-delay="100">
+                    <img src="assets/mess1.png" alt="Delicious Indian Thali">
+                    <div class="preview-overlay">
+                        <h4>Swaad Mess</h4>
+                        <p>Pure Veg | 500m Away</p>
+                    </div>
+                </div>
+                <div class="preview-img-wrapper" data-aos="zoom-in" data-aos-delay="200">
+                    <img src="assets/mess2.png" alt="South Indian Special">
+                    <div class="preview-overlay">
+                        <h4>Home Style Mess</h4>
+                        <p>Veg & Non-Veg | Nearby</p>
+                    </div>
+                </div>
+                <div class="preview-img-wrapper" data-aos="zoom-in" data-aos-delay="300">
+                    <img src="assets/mess3.png" alt="North Indian Delicacy">
+                    <div class="preview-overlay">
+                        <h4>Royal Tiffins</h4>
+                        <p>Boys Only | Budget Friendly</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta">
+        <div class="container" data-aos="zoom-out">
+            <h2 style="font-size: 2.5rem; color: white;">Stop Searching, Start Eating!</h2>
+            <p style="margin: 20px 0 40px; font-size: 1.2rem;">Join 2000+ students who find their daily meals via
+                SmartMess.</p>
+            <a href="register.html" class="btn btn-white" style="font-size: 1.3rem; padding: 20px 60px;">Join SmartMess
+                Now</a>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <a href="index.html" class="footer-logo"><i class="fas fa-pizza-slice"></i> SmartMess</a>
+                    <p style="color: var(--text-gray); font-weight: 600; line-height: 1.8;">Leading the way in
+                        digitalizing student mess services. Verified providers, real ratings, and student-first
+                        features.</p>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    </div>
+                </div>
+                <div class="footer-links">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="login.html">Student Login</a></li>
+                        <li><a href="register.html">Create Account</a></li>
+                        <li><a href="register.html?role=owner">For Mess Owners</a></li>
+                        <li><a href="#why-us">How it Works</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>Student Support</h4>
+                    <ul>
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Safety Rules</a></li>
+                        <li><a href="#">Terms & Conditions</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>Contact Us</h4>
+                    <ul style="list-style: none;">
+                        <li style="color: var(--text-gray); font-weight: 600; margin-bottom: 15px;">
+                            <i class="fas fa-envelope" style="color: var(--primary); margin-right: 10px;"></i>
+                            support@smartmess.com
+                        </li>
+                        <li style="color: var(--text-gray); font-weight: 600; margin-bottom: 15px;">
+                            <i class="fas fa-phone-alt" style="color: var(--primary); margin-right: 10px;"></i> +91
+                            98765 43210
+                        </li>
+                        <li style="color: var(--text-gray); font-weight: 600;">
+                            <i class="fas fa-map-marker-alt" style="color: var(--primary); margin-right: 10px;"></i>
+                            Akurdi, Pune - 411044
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                &copy; 2026 SmartMess Finder. Built with ❤️ for the Students of DY Patil.
+            </div>
         </div>
     </footer>
 
-    <style>
-        @media (max-width: 768px) {
-            .desktop-only {
-                display: none !important;
-            }
-
-            .search-float-bar {
-                max-width: 100%;
-                border-radius: 20px;
-                padding: 15px;
-            }
-
-            .search-input-group,
-            .filter-select {
-                background: #F8F9FA;
-                margin-bottom: 10px;
-                width: 100%;
-            }
-
-            .search-float-bar .btn {
-                width: 100%;
-                margin-left: 0;
-            }
-        }
-    </style>
-
-    <!-- AOS Animation Library -->
+    <!-- AOS Script -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
-    <script>
+    <script type="module">
+        import { authService } from './js/auth.js';
+        import { uiService } from './js/ui.js';
+
         AOS.init({
-            duration: 800,
+            duration: 1000,
             once: true,
-            offset: 50
+            offset: 100
         });
 
-        // Navbar scroll effect
+        // Initialize App & UI
+        async function init() {
+            const user = await authService.init();
+            handleAuthState(user, authService.userRole);
+
+            // Listen for changes
+            document.addEventListener('authChange', (e) => {
+                handleAuthState(e.detail.user, e.detail.role);
+            });
+        }
+
+        function handleAuthState(user, role) {
+            const navLogin = document.getElementById('nav-login');
+            const navSignup = document.getElementById('nav-signup');
+            const heroCta = document.getElementById('hero-cta');
+
+            if (user) {
+                const dashboardLink = role === 'owner' ? 'dashboard.html' : 'student-dashboard.html';
+                const userName = user.user_metadata?.full_name || user.email.split('@')[0];
+
+                // Update Nav
+                navLogin.href = dashboardLink;
+                navLogin.innerHTML = `Dashboard`;
+                navSignup.innerHTML = `Logout`;
+                navSignup.href = '#';
+                navSignup.onclick = (e) => { e.preventDefault(); authService.logout(); };
+
+                // Update Hero
+                heroCta.innerHTML = `
+                    <a href="${dashboardLink}" class="btn btn-white">Welcome back, ${userName}! Go to Dashboard</a>
+                `;
+            }
+        }
+
+        // Navbar Scroll Effect
         window.addEventListener('scroll', () => {
             const nav = document.getElementById('navbar');
             if (window.scrollY > 50) {
-                nav.style.boxShadow = '0 10px 30px rgba(0,0,0,0.05)';
+                nav.style.boxShadow = '0 10px 30px rgba(0,0,0,0.1)';
+                nav.style.background = 'var(--bg-card)';
             } else {
                 nav.style.boxShadow = 'none';
+                nav.style.background = 'var(--bg-nav)';
             }
         });
-    </script>
-
-    <script type="module">
-        import { authService } from './js/auth.js';
-        import { messService } from './js/mess.js';
-        import { uiService } from './js/ui.js';
-
-        const grid = document.getElementById('messList');
-        const loader = document.getElementById('mess-loader');
-
-        async function init() {
-            const user = await authService.init();
-            updateNav(user, authService.userRole);
-            loadMesses();
-
-            // React to further auth changes
-            document.addEventListener('authChange', (e) => {
-                updateNav(e.detail.user, e.detail.role);
-            });
-
-            // Bind Search events
-            document.getElementById('search-btn').onclick = loadMesses;
-            document.getElementById('search-input').onkeyup = (e) => e.key === 'Enter' && loadMesses();
-            document.getElementById('type-filter').onchange = loadMesses;
-            document.getElementById('gender-filter').onchange = loadMesses;
-        }
-
-        function updateNav(user, role) {
-            const container = document.getElementById('nav-actions');
-            if (!user) {
-                // Show Login/Register if logged out
-                container.innerHTML = `
-                    <button class="theme-toggle" onclick="window.toggleTheme()"><i class="fas fa-moon"></i></button>
-                    <a href="login.html" class="btn btn-outline">Login</a>
-                    <a href="register.html" class="btn btn-primary">Sign Up</a>
-                `;
-                return;
-            }
-
-            // User is logged in
-            const userName = user.user_metadata?.full_name || user.email.split('@')[0];
-            container.innerHTML = `
-                <div style="display:flex; align-items:center; gap:1.2rem;">
-                    <button class="theme-toggle" onclick="window.toggleTheme()"><i class="fas fa-moon"></i></button>
-                    <span style="font-weight: 700; color: var(--text-gray); font-size: 0.9rem;">👋 hi, ${userName}</span>
-                    ${role === 'owner' ? '<a href="dashboard.html" class="btn btn-primary" style="padding: 8px 16px; font-size: 0.9rem;">Dashboard</a>' : ''}
-                    <button id="logout-btn" class="btn btn-outline" style="padding: 8px 16px; font-size: 0.9rem; border-color: #E9ECEF;">Logout</button>
-                </div>
-            `;
-            document.getElementById('logout-btn').onclick = () => authService.logout();
-            uiService.updateThemeIcon(localStorage.getItem('smartmess-theme') || 'light');
-        }
-
-        async function loadMesses() {
-            loader.style.display = 'block';
-            grid.innerHTML = '';
-
-            try {
-                const filters = {
-                    name: document.getElementById('search-input').value,
-                    type: document.getElementById('type-filter').value,
-                    gender: document.getElementById('gender-filter').value
-                };
-
-                const messes = await messService.getAllMesses(filters);
-                loader.style.display = 'none';
-
-
-                if (messes.length === 0) {
-                    grid.innerHTML = `
-                        <div style="grid-column: 1/-1; text-align: center; padding: 60px; background: white; border-radius: 30px; box-shadow: var(--shadow-soft);">
-                            <img src="https://cdn-icons-png.flaticon.com/512/7486/7486831.png" style="width: 100px; opacity: 0.5; margin-bottom: 20px;">
-                            <h3 style="color: var(--text-gray);">No specific matches found.</h3>
-                            <p style="color: #CED4DA; font-weight: 600;">Try adjusting your filters.</p>
-                        </div>
-                    `;
-                    return;
-                }
-
-                displayMesses(messes);
-            } catch (err) {
-                loader.style.display = 'none';
-                uiService.showToast(err.message, 'error');
-            }
-        }
-
-        // 5️⃣ Display Messes on Student Dashboard (Preserving the beautiful UX)
-        function displayMesses(messes) {
-            const container = document.getElementById('messList');
-            container.innerHTML = '';
-
-            messes.forEach((mess, index) => {
-                const card = document.createElement('div');
-                card.className = 'mess-card';
-                card.setAttribute('data-aos', 'fade-up');
-                card.setAttribute('data-aos-delay', (index % 3) * 100);
-
-                // Fallback for missing or mismatched schema properties
-                const vegType = mess.veg_type || mess.type || 'N/A';
-                const catGender = mess.category || mess.gender || 'N/A';
-
-                const vegBadgeClass = vegType.toLowerCase().includes('veg') && !vegType.toLowerCase().includes('non') ? 'badge-veg' : 'badge-nonveg';
-                const icon = vegBadgeClass === 'badge-veg' ? 'fa-leaf' : 'fa-drumstick-bite';
-
-                const fallbackImg = "https://placehold.co/600x400?text=No+Image";
-                // Use image_url from Supabase Storage (uploaded file) OR external URL stored in image_url
-                let imgUrl = (mess.image_url && mess.image_url.trim() !== '') ? mess.image_url.trim() : fallbackImg;
-                if (imgUrl.match(/\.(html|htm|php|aspx)$/i)) imgUrl = fallbackImg;
-
-                // Read from map_url OR map_link (handles both column names in Supabase)
-                const rawMapLink = mess.map_url || mess.map_link || '';
-                let mapUrl;
-                if (rawMapLink.trim() !== '' && rawMapLink !== '#') {
-                    mapUrl = /^https?:\/\//i.test(rawMapLink) ? rawMapLink : 'https://' + rawMapLink;
-                } else if (mess.latitude && mess.longitude) {
-                    mapUrl = `https://www.google.com/maps?q=${mess.latitude},${mess.longitude}`;
-                } else {
-                    mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mess.address || mess.name)}`;
-                }
-
-                card.innerHTML = `
-                    <div class="card-img-container">
-                        <img src="${imgUrl}" alt="${mess.name}"
-                             referrerpolicy="no-referrer"
-                             onerror="this.onerror=null;this.src='${fallbackImg}'">
-                        <div class="card-badges">
-                            <span class="badge ${vegBadgeClass}"><i class="fas ${icon}"></i> ${vegType}</span>
-                            <span class="badge badge-gender"><i class="fas fa-users"></i> ${catGender}</span>
-                        </div>
-                    </div>
-                    <div class="card-info">
-                        <div class="card-title">
-                            <h3>${mess.name}</h3>
-                            <div class="card-price">₹${mess.price || 0}</div>
-                        </div>
-                        <div class="card-address">
-                            <i class="fas fa-map-pin" style="color: var(--primary); margin-right: 6px;"></i>${mess.address || 'Address not listed'}
-                        </div>
-                        
-                        <div class="card-footer">
-                            <div class="rating-box">
-                                <i class="fas fa-star"></i> ${mess.rating || '0.0'}
-                                <span style="font-size: 0.8rem; color: #ADB5BD;">(${mess.total_ratings || 0})</span>
-                            </div>
-                            <div class="distance-box">
-                                <i class="fas fa-location-arrow"></i> ${mess.distance || '0'} KM
-                            </div>
-                        </div>
-
-                        <div style="display: flex; gap: 10px; margin-top: 15px;">
-                            <a href="mess-details.html?id=${mess.id}" class="btn btn-outline" style="flex: 1; border-color: var(--secondary); color: var(--secondary); padding: 10px;">Details <i class="fas fa-info-circle"></i></a>
-                            <a href="${mapUrl}" target="_blank" class="btn btn-primary" style="flex: 1; padding: 10px;">Maps <i class="fas fa-map-marked-alt"></i></a>
-                        </div>
-                        <button onclick="handleRating('${mess.id}')" class="btn btn-outline" style="width: 100%; margin-top: 10px; border-color: #E9ECEF; color: var(--text-gray); padding: 8px;">⭐ Rate this Mess</button>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-        }
-
-        window.handleRating = async (id) => {
-            const user = authService.currentUser;
-            if (!user) {
-                uiService.showToast("Log in as a student to rate this mess!", "error"); return;
-            }
-            const val = prompt("Awesome! Rate this mess out of 5:", "5");
-            if (!val || isNaN(val)) return;
-            try {
-                await messService.rateMess(id, parseInt(val));
-                uiService.showToast("Thanks! Rating updated.");
-                loadMesses();
-            } catch (err) { uiService.showToast(err.message, 'error'); }
-        }
 
         init();
     </script>

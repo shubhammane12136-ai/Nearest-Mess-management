@@ -150,7 +150,16 @@
 
     <!-- AOS Animation Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
-    <script> AOS.init({ duration: 800, once: true }); </script>
+    <script>
+        AOS.init({ duration: 800, once: true });
+
+        // Pre-select role based on URL
+        const params = new URLSearchParams(window.location.search);
+        const roleParam = params.get('role');
+        if (roleParam === 'owner' || roleParam === 'student') {
+            document.querySelector(`input[name="role"][value="${roleParam}"]`).checked = true;
+        }
+    </script>
 
     <script type="module">
         import { authService } from './js/auth.js';
@@ -182,7 +191,7 @@
                     if (role === 'owner') {
                         window.location.href = 'dashboard.html';
                     } else {
-                        window.location.href = 'index.html';
+                        window.location.href = 'student-dashboard.html';
                     }
                 }, 1200);
 

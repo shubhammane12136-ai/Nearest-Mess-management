@@ -171,6 +171,23 @@ class AuthService {
         }
         return true;
     }
+
+    /**
+     * Page Guard: Redirects to login if not authenticated or not a student
+     */
+    async requireStudent() {
+        const user = await this.init();
+        if (!user) {
+            window.location.href = 'login.html';
+            return false;
+        }
+        if (this.userRole !== 'student') {
+            alert("Access Denied: Student account required.");
+            window.location.href = 'index.html';
+            return false;
+        }
+        return true;
+    }
 }
 
 export const authService = new AuthService();
