@@ -72,6 +72,14 @@ class MessService {
             throw new Error("All required fields must be filled");
         }
 
+        // Ensure price is a number
+        if (typeof messData.price === 'string') {
+            messData.price = parseInt(messData.price, 10);
+        }
+        if (isNaN(messData.price)) {
+            throw new Error("Price must be a valid number");
+        }
+
         console.log("Sending mess data:", messData);
 
         let image_url = messData.image_url;
@@ -98,18 +106,18 @@ class MessService {
         // 3. Prepare Final Payload
         const id = messData.id || null;
         const payload = {
-            name: messData.name,
-            veg_type: messData.veg_type,
-            category: messData.category,
-            price: messData.price,
-            phone: messData.phone,
-            address: messData.address,
-            image_url: image_url,
-            map_url: messData.map_url,
-            latitude: messData.latitude,
-            longitude: messData.longitude,
-            total_seats: messData.total_seats,
-            available_seats: messData.available_seats,
+            name: messData.name.trim(),
+            veg_type: messData.veg_type.trim(),
+            category: messData.category.trim(),
+            price: parseInt(messData.price),
+            phone: messData.phone.trim(),
+            address: messData.address.trim(),
+            image_url: image_url || null,
+            map_url: messData.map_url && messData.map_url.trim() ? messData.map_url.trim() : null,
+            latitude: messData.latitude ? parseFloat(messData.latitude) : null,
+            longitude: messData.longitude ? parseFloat(messData.longitude) : null,
+            total_seats: messData.total_seats ? parseInt(messData.total_seats) : 0,
+            available_seats: messData.available_seats ? parseInt(messData.available_seats) : 0,
             owner_id: messData.owner_id
         };
 
