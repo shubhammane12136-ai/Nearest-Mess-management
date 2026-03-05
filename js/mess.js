@@ -112,14 +112,16 @@ class MessService {
             price: parseInt(messData.price),
             phone: messData.phone.trim(),
             address: messData.address.trim(),
-            image_url: image_url || null,
-            map_url: messData.map_url && messData.map_url.trim() ? messData.map_url.trim() : null,
-            latitude: messData.latitude ? parseFloat(messData.latitude) : null,
-            longitude: messData.longitude ? parseFloat(messData.longitude) : null,
-            total_seats: messData.total_seats ? parseInt(messData.total_seats) : 0,
-            available_seats: messData.available_seats ? parseInt(messData.available_seats) : 0,
             owner_id: messData.owner_id
         };
+
+        // Add optional columns only if they have values
+        if (image_url) payload.image_url = image_url;
+        if (messData.map_url && messData.map_url.trim()) payload.map_url = messData.map_url.trim();
+        if (messData.latitude) payload.latitude = parseFloat(messData.latitude);
+        if (messData.longitude) payload.longitude = parseFloat(messData.longitude);
+        if (messData.total_seats) payload.total_seats = parseInt(messData.total_seats);
+        if (messData.available_seats) payload.available_seats = parseInt(messData.available_seats);
 
         if (id) {
             // Update Existing Mess (Requires matching owner_id)
