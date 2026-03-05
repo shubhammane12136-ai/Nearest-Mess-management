@@ -125,15 +125,21 @@ class AuthService {
             const { data, error } = await supabase
                 .from('profiles')
                 .select('role')
-                .eq('id', uid)
-                .single(); // Gets a single row object
+                .eq('id', uid);
 
             if (error) {
-                console.warn("Could not find user role in profiles table:", error.message);
+                console.error("Role fetch error:", error);
                 return null;
             }
-            return data.role;
+
+            if (!data || data.length === 0) {
+                console.log("No profile found");
+                return null;
+            }
+
+            return data[0].role;
         } catch (err) {
+            console.error("Unexpected error fetching role:", err);
             return null;
         }
     }
